@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>指令部 — Japanese Command Station</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -29,37 +29,13 @@
   .loading-bar-fill{height:100%;background:var(--gold);border-radius:2px;animation:loadBar 1.2s ease infinite;}
   @keyframes loadBar{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}
 
-  /* ── Desktop layout: sidebar + content side by side ── */
-  .app-shell{
-    display:flex;
-    flex-direction:row;
-    min-height:100vh;
-  }
+  /* ── App shell: flex row ── */
+  .app-shell{display:flex;flex-direction:row;min-height:100vh;}
 
   /* ── Sidebar ── */
-  .sidebar{
-    width:var(--sidebar-w);
-    flex-shrink:0;
-    background:var(--bg-card);
-    border-right:1px solid var(--border);
-    display:flex;
-    flex-direction:column;
-    position:sticky;
-    top:0;
-    height:100vh;
-    overflow:hidden;
-    transition:width 0.25s ease;
-  }
+  .sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--bg-card);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;transition:width 0.25s ease;}
   .sidebar.collapsed{width:0;border-right:none;}
-  .sidebar-inner{
-    width:var(--sidebar-w);
-    flex-shrink:0;
-    display:flex;
-    flex-direction:column;
-    height:100%;
-    overflow-y:auto;
-    padding:28px 0;
-  }
+  .sidebar-inner{width:var(--sidebar-w);flex-shrink:0;display:flex;flex-direction:column;height:100%;overflow-y:auto;padding:28px 0;}
   .sidebar-logo{padding:0 24px 28px;border-bottom:1px solid var(--border-soft);margin-bottom:16px;white-space:nowrap;}
   .logo-jp{font-family:'DM Serif Display',serif;font-size:22px;color:var(--gold);letter-spacing:0.05em;line-height:1;margin-bottom:4px;}
   .logo-en{font-size:10px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);}
@@ -72,14 +48,8 @@
   .streak-number{font-family:'DM Mono',monospace;font-size:32px;font-weight:500;color:var(--gold);line-height:1;margin-bottom:2px;}
   .streak-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-dim);}
 
-  /* ── Right column (topbar + main) ── */
-  .content-col{
-    flex:1;
-    min-width:0;
-    display:flex;
-    flex-direction:column;
-    min-height:100vh;
-  }
+  /* ── Content column ── */
+  .content-col{flex:1;min-width:0;display:flex;flex-direction:column;min-height:100vh;}
 
   /* ── Topbar ── */
   .topbar{background:var(--bg-deep);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:100;}
@@ -94,14 +64,14 @@
   .hamburger{background:none;border:1px solid var(--border);border-radius:6px;padding:7px 9px;cursor:pointer;color:var(--text-secondary);font-size:16px;line-height:1;transition:all 0.15s;flex-shrink:0;}
   .hamburger:hover{background:var(--bg-hover);color:var(--text-primary);}
 
-  /* ── Main content ── */
+  /* ── Main ── */
   .main{padding:24px 28px;flex:1;display:flex;flex-direction:column;gap:22px;}
 
-  /* ── Sidebar backdrop (mobile) ── */
+  /* ── Sidebar backdrop ── */
   .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:199;backdrop-filter:blur(2px);}
   .sidebar-backdrop.visible{display:block;}
 
-  /* ── Stats row ── */
+  /* ── Stat cards ── */
   .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
   .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;transition:border-color 0.2s;}
   .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--gold));opacity:0.6;}
@@ -193,7 +163,7 @@
   .wk-enlightened{background:rgba(0,160,241,0.08);border:1px solid rgba(0,160,241,0.2);}.wk-enlightened .srs-label{color:#60b8e0;}.wk-enlightened .srs-val{color:#60b8e0;}
   .wk-burned{background:rgba(244,166,32,0.1);border:1px solid rgba(244,166,32,0.2);}.wk-burned .srs-label{color:var(--wk-gold);}.wk-burned .srs-val{color:var(--wk-gold);}
   .wk-token-form{display:flex;gap:8px;margin-bottom:16px;}
-  .wk-token-input{flex:1;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;}
+  .wk-token-input{flex:1;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:16px;outline:none;transition:border-color 0.15s;}
   .wk-token-input:focus{border-color:var(--wk-pink);}
   .wk-token-btn{background:var(--wk-pink);color:#fff;border:none;padding:9px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
   .wk-token-btn:hover{background:#e0508f;}
@@ -223,7 +193,13 @@
   .modal-body{padding:18px 22px 22px;}
   .form-group{margin-bottom:14px;}
   .form-label{display:block;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:7px;}
-  .form-input,.form-select,.form-textarea{width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:13.5px;outline:none;transition:border-color 0.15s;}
+
+  /* ── font-size:16px on all inputs prevents iOS zoom ── */
+  .form-input,.form-select,.form-textarea{
+    width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;
+    padding:9px 12px;color:var(--text-primary);font-family:'Outfit',sans-serif;
+    font-size:16px;outline:none;transition:border-color 0.15s;
+  }
   .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold-dim);}
   .form-textarea{resize:vertical;min-height:75px;}
   .form-select option{background:var(--bg-card);}
@@ -234,17 +210,10 @@
   .type-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
   .type-tab{flex:1;min-width:60px;padding:8px 6px;border:1px solid var(--border);border-radius:8px;text-align:center;font-size:11.5px;font-weight:500;cursor:pointer;color:var(--text-secondary);background:transparent;font-family:'Outfit',sans-serif;transition:all 0.15s;}
   .type-tab.selected{background:var(--gold-glow);border-color:var(--gold-dim);color:var(--gold);}
-  .btn-submit{width:100%;background:var(--gold);color:#0f0e0d;border:none;padding:11px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;transition:background 0.15s;}
+  .btn-submit{width:100%;background:var(--gold);color:#0f0e0d;border:none;padding:11px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;cursor:pointer;margin-top:4px;transition:background 0.15s;}
   .btn-submit:hover{background:#e0b860;}
   .btn-submit:disabled{opacity:0.6;cursor:not-allowed;}
   .form-section{display:none;}.form-section.visible{display:block;}
-
-  /* ── Mobile bottom nav ── */
-  .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg-card);border-top:1px solid var(--border);z-index:150;}
-  .mobile-nav-inner{display:flex;justify-content:space-around;align-items:stretch;}
-  .mobile-nav-item{display:flex;flex-direction:column;align-items:center;padding:10px 4px 12px;cursor:pointer;flex:1;gap:3px;border-top:2px solid transparent;transition:all 0.15s;font-size:9px;color:var(--text-dim);letter-spacing:0.04em;text-transform:uppercase;font-weight:500;}
-  .mobile-nav-item .mn-icon{font-size:18px;}
-  .mobile-nav-item.active{color:var(--gold);border-top-color:var(--gold);}
 
   /* ── Misc ── */
   ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
@@ -256,51 +225,40 @@
   .empty-state{text-align:center;padding:24px 16px;color:var(--text-dim);font-size:12.5px;line-height:1.6;}
   .empty-icon{font-size:26px;margin-bottom:8px;}
 
-  /* ── MOBILE BREAKPOINT ── */
-  @media (max-width:768px) {
-    /* Sidebar becomes a fixed overlay, hidden by default */
+  /* ── Mobile ── */
+  @media (max-width:768px){
+    /* Sidebar becomes fixed overlay */
     .sidebar{
-      position:fixed;
-      left:0; top:0;
-      height:100vh;
-      z-index:200;
+      position:fixed;left:0;top:0;height:100vh;z-index:200;
       transform:translateX(-100%);
       transition:transform 0.25s ease;
       width:var(--sidebar-w) !important;
     }
     .sidebar.mobile-open{transform:translateX(0);}
 
-    /* Content column fills full width */
+    /* Content fills full width, no bottom padding needed */
     .content-col{width:100%;min-height:100vh;}
+    .main{padding:16px;}
 
-    /* Main area needs bottom padding for the nav bar */
-    .main{padding:16px 16px 88px 16px;}
-
-    /* Stat cards: 2 columns */
+    /* 2-col stat cards */
     .stats-row{grid-template-columns:repeat(2,1fr);gap:10px;}
     .stat-value{font-size:22px;}
 
-    /* Panels stack */
+    /* Single-col panels */
     .section-grid{grid-template-columns:1fr;}
 
-    /* WK grid: 3 cols on mobile */
+    /* WK SRS 3-col on mobile */
     .wk-srs-grid{grid-template-columns:repeat(3,1fr);}
-
-    /* Show mobile nav */
-    .mobile-nav{display:block;}
-
-    /* Hide desktop-only elements */
-    .level-pill{display:none;}
-    .cloud-status{display:none;}
 
     /* Topbar tighter */
     .topbar{padding:12px 16px;}
     .topbar-left h1{font-size:16px;}
-  }
 
-  @media (max-width:420px){
-    .stats-row{grid-template-columns:repeat(2,1fr);}
-    .wk-srs-grid{grid-template-columns:repeat(3,1fr);}
+    /* Hide desktop extras */
+    .level-pill{display:none;}
+    .cloud-status{display:none;}
+
+    /* Single-col form rows on small screens */
     .form-row{grid-template-columns:1fr;}
   }
 </style>
@@ -313,12 +271,10 @@
   <div class="loading-text">Loading your data…</div>
 </div>
 
-<!-- Mobile sidebar backdrop -->
 <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
 
 <div class="app-shell" id="app-shell" style="display:none">
 
-  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-inner">
       <div class="sidebar-logo">
@@ -342,7 +298,6 @@
     </div>
   </aside>
 
-  <!-- Content column -->
   <div class="content-col">
     <header class="topbar">
       <div class="topbar-left">
@@ -363,19 +318,7 @@
 
 </div>
 
-<!-- Mobile bottom nav -->
-<nav class="mobile-nav">
-  <div class="mobile-nav-inner">
-    <div class="mobile-nav-item active" onclick="switchView('dashboard')"><span class="mn-icon">⌂</span>Home</div>
-    <div class="mobile-nav-item" onclick="switchView('anki')"><span class="mn-icon">🃏</span>Anki</div>
-    <div class="mobile-nav-item" onclick="switchView('wanikani')"><span class="mn-icon">🦀</span>WK</div>
-    <div class="mobile-nav-item" onclick="switchView('reading')"><span class="mn-icon">📖</span>Read</div>
-    <div class="mobile-nav-item" onclick="switchView('listening')"><span class="mn-icon">🎧</span>Listen</div>
-    <div class="mobile-nav-item" onclick="switchView('output')"><span class="mn-icon">💬</span>Output</div>
-  </div>
-</nav>
-
-<!-- Log Modal -->
+<!-- Modal -->
 <div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
   <div class="modal">
     <div class="modal-header">
@@ -389,35 +332,39 @@
         <button class="type-tab" onclick="selectType('listening',this)">🎧 Listen</button>
         <button class="type-tab" onclick="selectType('output',this)">💬 Output</button>
       </div>
+      <!-- Anki -->
       <div class="form-section visible" id="form-anki">
         <div class="form-row">
-          <div class="form-group"><label class="form-label">Reviews Done</label><input class="form-input" type="number" id="anki-reviews" placeholder="e.g. 80" min="0"></div>
-          <div class="form-group"><label class="form-label">New Cards</label><input class="form-input" type="number" id="anki-new" placeholder="e.g. 10" min="0"></div>
+          <div class="form-group"><label class="form-label">Reviews Done</label><input class="form-input" type="number" id="anki-reviews" placeholder="e.g. 80" min="0" inputmode="numeric"></div>
+          <div class="form-group"><label class="form-label">New Cards</label><input class="form-input" type="number" id="anki-new" placeholder="e.g. 10" min="0" inputmode="numeric"></div>
         </div>
         <div class="form-group"><label class="form-label">Deck / Focus</label><input class="form-input" type="text" id="anki-deck" placeholder="e.g. Core 2k, Grammar"></div>
         <div class="form-group"><label class="form-label">Minutes Spent</label><div class="range-wrap"><input type="range" min="5" max="120" value="30" id="anki-mins" oninput="document.getElementById('anki-mins-val').textContent=this.value"><span class="range-val" id="anki-mins-val">30</span></div></div>
         <div class="form-group"><label class="form-label">Notes (optional)</label><textarea class="form-textarea" id="anki-notes" placeholder="Anything you noticed, struggled with, or nailed…"></textarea></div>
       </div>
+      <!-- Reading -->
       <div class="form-section" id="form-reading">
         <div class="form-group"><label class="form-label">Book / Material</label><input class="form-input" type="text" id="read-book" placeholder="e.g. Koguma no Kuuku"></div>
         <div class="form-row">
-          <div class="form-group"><label class="form-label">Pages Read</label><input class="form-input" type="number" id="read-pages" placeholder="e.g. 12" min="0"></div>
+          <div class="form-group"><label class="form-label">Pages Read</label><input class="form-input" type="number" id="read-pages" placeholder="e.g. 12" min="0" inputmode="numeric"></div>
           <div class="form-group"><label class="form-label">Minutes</label><div class="range-wrap" style="margin-top:2px"><input type="range" min="5" max="120" value="25" id="read-mins" oninput="document.getElementById('read-mins-val').textContent=this.value"><span class="range-val" id="read-mins-val">25</span></div></div>
         </div>
         <div class="form-group"><label class="form-label">Comprehension Feel</label><div class="range-wrap"><input type="range" min="0" max="100" value="65" id="read-comp" oninput="document.getElementById('read-comp-val').textContent=this.value+'%'"><span class="range-val" id="read-comp-val">65%</span></div></div>
-        <div class="form-group"><label class="form-label">Words Looked Up</label><input class="form-input" type="number" id="read-lookups" placeholder="e.g. 5" min="0"></div>
+        <div class="form-group"><label class="form-label">Words Looked Up</label><input class="form-input" type="number" id="read-lookups" placeholder="e.g. 5" min="0" inputmode="numeric"></div>
         <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="read-notes" placeholder="New words, grammar, impressions…"></textarea></div>
       </div>
+      <!-- Listening -->
       <div class="form-section" id="form-listening">
         <div class="form-group"><label class="form-label">Show / Material</label><input class="form-input" type="text" id="listen-show" placeholder="e.g. Shigatsu wa Kimi no Uso"></div>
         <div class="form-row">
-          <div class="form-group"><label class="form-label">Episodes</label><input class="form-input" type="number" id="listen-eps" placeholder="e.g. 2" min="0"></div>
+          <div class="form-group"><label class="form-label">Episodes</label><input class="form-input" type="number" id="listen-eps" placeholder="e.g. 2" min="0" inputmode="numeric"></div>
           <div class="form-group"><label class="form-label">Minutes</label><div class="range-wrap" style="margin-top:2px"><input type="range" min="5" max="180" value="45" id="listen-mins" oninput="document.getElementById('listen-mins-val').textContent=this.value"><span class="range-val" id="listen-mins-val">45</span></div></div>
         </div>
         <div class="form-group"><label class="form-label">Comprehension %</label><div class="range-wrap"><input type="range" min="0" max="100" value="50" id="listen-comp" oninput="document.getElementById('listen-comp-val').textContent=this.value+'%'"><span class="range-val" id="listen-comp-val">50%</span></div></div>
         <div class="form-group"><label class="form-label">Subs Used</label><select class="form-select" id="listen-subs"><option value="none">No subs</option><option value="jp" selected>Japanese subs</option><option value="en">English subs</option></select></div>
         <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="listen-notes" placeholder="What you caught, what flew by…"></textarea></div>
       </div>
+      <!-- Output -->
       <div class="form-section" id="form-output">
         <div class="form-group"><label class="form-label">Output Type</label><select class="form-select" id="output-type-select"><option value="texting">Daily texting</option><option value="writing">Free writing</option><option value="speaking">Speaking practice</option><option value="other">Other</option></select></div>
         <div class="form-group"><label class="form-label">Minutes</label><div class="range-wrap"><input type="range" min="5" max="90" value="20" id="output-mins" oninput="document.getElementById('output-mins-val').textContent=this.value"><span class="range-val" id="output-mins-val">20</span></div></div>
@@ -455,12 +402,14 @@ function sessionText(s){
 }
 function showToast(msg,isError=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(isError?' error':'');t.style.display='block';setTimeout(()=>t.style.display='none',2800);}
 
+// ── Blur active input before closing modal (restores zoom) ─
+function blurActiveInput(){if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();}
+
 // ── Sidebar ────────────────────────────────────────────────
 function toggleSidebar(){
   const isMobile=window.innerWidth<=768;
   if(isMobile){
-    const sb=document.getElementById('sidebar');
-    const bd=document.getElementById('sidebar-backdrop');
+    const sb=document.getElementById('sidebar'),bd=document.getElementById('sidebar-backdrop');
     const isOpen=sb.classList.contains('mobile-open');
     sb.classList.toggle('mobile-open',!isOpen);
     bd.classList.toggle('visible',!isOpen);
@@ -518,7 +467,10 @@ async function saveSession(data){
     state.sessions.unshift({id:ref.id,...data,createdAt:new Date()});
     state.allSessions.unshift({id:ref.id,...data,createdAt:new Date()});
     btn.disabled=false;btn.textContent='Save Session ✓';
-    closeModal();showToast('Session saved ✓');renderView(currentView);
+    blurActiveInput(); // release keyboard/zoom before closing
+    closeModal();
+    showToast('Session saved ✓');
+    renderView(currentView);
   }catch(e){
     console.error('Save error:',e);btn.disabled=false;btn.textContent='Save Session ✓';
     showToast('Save failed',true);
@@ -546,26 +498,13 @@ async function fetchWaniKani(token){
     if(reviewIds.length>0){
       const subjRes=await fetch(`https://api.wanikani.com/v2/subjects?ids=${reviewIds.join(',')}`,{headers:h});
       const subjData=await subjRes.json();
-      // get srs stages for these subjects
       const assignRes=await fetch(`https://api.wanikani.com/v2/assignments?subject_ids=${reviewIds.join(',')}`,{headers:h});
       const assignData=await assignRes.json();
-      const stageBySubject={};
-      (assignData.data||[]).forEach(a=>{stageBySubject[a.data.subject_id]=a.data.srs_stage;});
-      recentSubjects=(subjData.data||[]).map(s=>({
-        id:s.id,type:s.object,
-        chars:s.data.characters||s.data.slug||'?',
-        meanings:(s.data.meanings||[]).filter(m=>m.primary).map(m=>m.meaning)[0]||'',
-        srsStage:stageBySubject[s.id]||0,
-      }));
+      const stageBy={};
+      (assignData.data||[]).forEach(a=>{stageBy[a.data.subject_id]=a.data.srs_stage;});
+      recentSubjects=(subjData.data||[]).map(s=>({id:s.id,type:s.object,chars:s.data.characters||s.data.slug||'?',meanings:(s.data.meanings||[]).filter(m=>m.primary).map(m=>m.meaning)[0]||'',srsStage:stageBy[s.id]||0}));
     }
-    return{
-      level:user.data.level,username:user.data.username,
-      reviewsAvailable:summary.data?.reviews?.[0]?.subject_ids?.length||0,
-      lessonsAvailable:summary.data?.lessons?.[0]?.subject_ids?.length||0,
-      sc,recentSubjects,
-      apprenticeTotal:sc.a1+sc.a2+sc.a3+sc.a4,
-      guruTotal:sc.g1+sc.g2,
-    };
+    return{level:user.data.level,username:user.data.username,reviewsAvailable:summary.data?.reviews?.[0]?.subject_ids?.length||0,lessonsAvailable:summary.data?.lessons?.[0]?.subject_ids?.length||0,sc,recentSubjects,apprenticeTotal:sc.a1+sc.a2+sc.a3+sc.a4,guruTotal:sc.g1+sc.g2};
   }catch(e){console.error('WK:',e);return{error:e.message};}
 }
 function srsLabel(stage){return{1:'Appr 1',2:'Appr 2',3:'Appr 3',4:'Appr 4',5:'Guru 1',6:'Guru 2',7:'Master',8:'Enlight.',9:'Burned'}[stage]||'—';}
@@ -594,10 +533,7 @@ function switchView(view){
   const titles={dashboard:'Good morning, Zach',anki:'Flashcards',wanikani:'WaniKani',reading:'Reading Tracker',listening:'Listening Log',output:'Output Log',history:'Study History'};
   document.getElementById('view-title').textContent=titles[view]||view;
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  const order=['dashboard','anki','wanikani','reading','listening','output','history'];
-  order.forEach((v,i)=>{if(v===view)document.querySelectorAll('.nav-item')[i]?.classList.add('active');});
-  document.querySelectorAll('.mobile-nav-item').forEach(el=>el.classList.remove('active'));
-  ['dashboard','anki','wanikani','reading','listening','output'].forEach((v,i)=>{if(v===view)document.querySelectorAll('.mobile-nav-item')[i]?.classList.add('active');});
+  ['dashboard','anki','wanikani','reading','listening','output','history'].forEach((v,i)=>{if(v===view)document.querySelectorAll('.nav-item')[i]?.classList.add('active');});
   renderView(view);
 }
 function renderView(view){
@@ -638,7 +574,7 @@ function renderDashboard(main){
 // ── WaniKani view ──────────────────────────────────────────
 function renderWaniKani(main){
   if(!state.wkToken){
-    main.innerHTML=`<div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🦀</span> Connect WaniKani</div></div><div class="panel-body"><p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6">Enter your WaniKani API token to pull in your level, SRS breakdown, available reviews &amp; recent items.<br><br>Go to <strong style="color:var(--text-primary)">wanikani.com → Settings → API Tokens</strong> and generate a read-only token.</p><div class="wk-token-form"><input class="wk-token-input" type="password" id="wk-token-field" placeholder="Paste your API token here…"><button class="wk-token-btn" onclick="connectWaniKani()">Connect</button></div><p style="font-size:11px;color:var(--text-dim)">Your token is stored in your browser's local storage only — sent directly to WaniKani's API, never to any other server.</p></div></div>`;
+    main.innerHTML=`<div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🦀</span> Connect WaniKani</div></div><div class="panel-body"><p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6">Enter your WaniKani API token to pull in your level, SRS breakdown, available reviews &amp; recent items.<br><br>Go to <strong style="color:var(--text-primary)">wanikani.com → Settings → API Tokens</strong> and generate a read-only token.</p><div class="wk-token-form"><input class="wk-token-input" type="password" id="wk-token-field" placeholder="Paste your API token here…"><button class="wk-token-btn" onclick="connectWaniKani()">Connect</button></div><p style="font-size:11px;color:var(--text-dim)">Stored in your browser only — sent directly to WaniKani's API.</p></div></div>`;
     return;
   }
   if(!state.wkData){
@@ -651,21 +587,10 @@ function renderWaniKani(main){
     return;
   }
   const wk=state.wkData;
-  const srsCards=[
-    {label:'Apprentice',cls:'wk-apprentice',val:wk.apprenticeTotal,sub:`${wk.sc.a1}·${wk.sc.a2}·${wk.sc.a3}·${wk.sc.a4}`},
-    {label:'Guru',cls:'wk-guru',val:wk.guruTotal,sub:`${wk.sc.g1}·${wk.sc.g2}`},
-    {label:'Master',cls:'wk-master',val:wk.sc.ma,sub:''},
-    {label:'Enlightened',cls:'wk-enlightened',val:wk.sc.en,sub:''},
-    {label:'Burned',cls:'wk-burned',val:wk.sc.bu,sub:''},
-  ];
+  const srsCards=[{label:'Apprentice',cls:'wk-apprentice',val:wk.apprenticeTotal,sub:`${wk.sc.a1}·${wk.sc.a2}·${wk.sc.a3}·${wk.sc.a4}`},{label:'Guru',cls:'wk-guru',val:wk.guruTotal,sub:`${wk.sc.g1}·${wk.sc.g2}`},{label:'Master',cls:'wk-master',val:wk.sc.ma,sub:''},{label:'Enlightened',cls:'wk-enlightened',val:wk.sc.en,sub:''},{label:'Burned',cls:'wk-burned',val:wk.sc.bu,sub:''}];
   const srsHtml=srsCards.map(r=>`<div class="wk-srs-card ${r.cls}"><div class="srs-label">${r.label}</div><div class="srs-val">${r.val.toLocaleString()}</div>${r.sub?`<div style="font-size:9px;opacity:0.6;margin-top:3px">${r.sub}</div>`:''}</div>`).join('');
-  const recentHtml=wk.recentSubjects.length===0?`<div class="empty-state" style="padding:12px 0"><div class="empty-icon">🎉</div>No reviews available right now!</div>`:wk.recentSubjects.map(s=>{const tc=s.type==='radical'?'wk-rad':s.type==='kanji'?'wk-kan':'wk-voc';const tl=s.type==='radical'?'RAD':s.type==='kanji'?'KAN':'VOC';return`<div class="wk-review-item"><span class="wk-subject-type ${tc}">${tl}</span><span class="wk-subject-chars">${s.chars}</span><span class="wk-subject-meaning">${s.meanings}</span><span class="wk-srs-stage">${srsLabel(s.srsStage)}</span></div>`;}).join('');
-  const pipeItems=[
-    {label:'Apprentice',val:wk.apprenticeTotal,max:500,color:'var(--wk-pink)',tip:'Keep under 100 for manageable reviews'},
-    {label:'Guru',val:wk.guruTotal,max:1000,color:'var(--wk-purple)',tip:''},
-    {label:'Master',val:wk.sc.ma,max:2000,color:'var(--wk-blue)',tip:''},
-    {label:'Enlightened',val:wk.sc.en,max:2000,color:'#60b8e0',tip:''},
-  ];
+  const recentHtml=wk.recentSubjects.length===0?`<div class="empty-state" style="padding:12px 0"><div class="empty-icon">🎉</div>No reviews available!</div>`:wk.recentSubjects.map(s=>{const tc=s.type==='radical'?'wk-rad':s.type==='kanji'?'wk-kan':'wk-voc';const tl=s.type==='radical'?'RAD':s.type==='kanji'?'KAN':'VOC';return`<div class="wk-review-item"><span class="wk-subject-type ${tc}">${tl}</span><span class="wk-subject-chars">${s.chars}</span><span class="wk-subject-meaning">${s.meanings}</span><span class="wk-srs-stage">${srsLabel(s.srsStage)}</span></div>`;}).join('');
+  const pipeItems=[{label:'Apprentice',val:wk.apprenticeTotal,max:500,color:'var(--wk-pink)',tip:'Keep under 100 for manageable reviews'},{label:'Guru',val:wk.guruTotal,max:1000,color:'var(--wk-purple)',tip:''},{label:'Master',val:wk.sc.ma,max:2000,color:'var(--wk-blue)',tip:''},{label:'Enlightened',val:wk.sc.en,max:2000,color:'#60b8e0',tip:''}];
   main.innerHTML=`
     <div class="stats-row">
       <div class="stat-card fade-in" style="--accent:var(--wk-pink)"><div class="stat-label">WK Level</div><div class="stat-value">${wk.level}</div><div class="stat-sub">${wk.username}</div></div>
@@ -675,20 +600,14 @@ function renderWaniKani(main){
     </div>
     <div class="panel fade-in">
       <div class="panel-header"><div class="panel-title"><span>📊</span> SRS Breakdown</div><div style="display:flex;gap:8px;align-items:center"><button class="wk-refresh-btn" onclick="refreshWaniKani()">↻ Refresh</button><button onclick="disconnectWaniKani()" style="font-size:10px;color:var(--text-dim);background:none;border:none;cursor:pointer">Disconnect</button></div></div>
-      <div class="panel-body"><div class="wk-srs-grid">${srsHtml}</div><div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-soft);font-size:11px;color:var(--text-dim)">Total items: ${(wk.apprenticeTotal+wk.guruTotal+wk.sc.ma+wk.sc.en+wk.sc.bu).toLocaleString()} · Burned: ${wk.sc.bu.toLocaleString()}</div></div>
+      <div class="panel-body"><div class="wk-srs-grid">${srsHtml}</div><div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-soft);font-size:11px;color:var(--text-dim)">Total: ${(wk.apprenticeTotal+wk.guruTotal+wk.sc.ma+wk.sc.en+wk.sc.bu).toLocaleString()} items · Burned: ${wk.sc.bu.toLocaleString()}</div></div>
     </div>
     <div class="section-grid">
-      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🔔</span> Available for Review</div><span style="font-size:11px;color:var(--text-dim)">Up to 10 shown</span></div><div class="panel-body">${recentHtml}</div></div>
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🔔</span> Available for Review</div><span style="font-size:11px;color:var(--text-dim)">Up to 10</span></div><div class="panel-body">${recentHtml}</div></div>
       <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>💡</span> Pipeline Health</div></div><div class="panel-body">${pipeItems.map(item=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11.5px;color:var(--text-secondary)">${item.label}</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:${item.color}">${item.val}</span></div><div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:${Math.min(100,Math.round(item.val/item.max*100))}%;background:${item.color};border-radius:2px"></div></div>${item.tip?`<div style="font-size:9.5px;color:var(--text-dim);margin-top:2px">${item.tip}</div>`:''}</div>`).join('')}<div style="padding-top:12px;border-top:1px solid var(--border-soft);font-size:11px;color:var(--text-dim)">🔥 Burned: ${wk.sc.bu.toLocaleString()} items permanently learned</div></div></div>
     </div>`;
 }
-
-async function connectWaniKani(){
-  const token=document.getElementById('wk-token-field')?.value?.trim();
-  if(!token)return showToast('Please enter your API token',true);
-  state.wkToken=token;localStorage.setItem('wk_token',token);state.wkData=null;
-  showToast('Connecting to WaniKani…');renderView('wanikani');
-}
+async function connectWaniKani(){const token=document.getElementById('wk-token-field')?.value?.trim();if(!token)return showToast('Please enter your API token',true);state.wkToken=token;localStorage.setItem('wk_token',token);state.wkData=null;showToast('Connecting…');renderView('wanikani');}
 function disconnectWaniKani(){state.wkToken='';state.wkData=null;localStorage.removeItem('wk_token');renderView('wanikani');}
 function refreshWaniKani(){state.wkData=null;showToast('Refreshing…');renderView('wanikani');}
 
@@ -712,7 +631,7 @@ function renderReading(main){
   const books=Object.entries(bm).map(([t,d])=>({title:t,pages:d.pages,sessions:d.sessions,avgComp:Math.round(d.comp.reduce((a,b)=>a+b,0)/d.comp.length)}));
   const booksHtml=books.length===0?`<div class="empty-state"><div class="empty-icon">📖</div>No reading sessions yet.</div>`:books.map(b=>`<div class="book-card"><div class="book-spine active">${b.title.slice(0,8)}</div><div class="book-info"><div class="book-title">${b.title}</div><div class="book-meta">${b.pages} pages · ${b.sessions} sessions</div><div class="comp-bar" style="margin-top:6px"><span class="comp-label">Avg comp</span><div class="comp-track"><div class="comp-fill" style="width:${b.avgComp}%;background:var(--sage)"></div></div><span class="comp-pct" style="color:var(--sage)">${b.avgComp}%</span></div></div></div>`).join('');
   const feed=read.slice(0,6).map(s=>`<div class="log-entry"><div class="log-dot dot-reading"></div><div class="log-text"><strong>${s.book||'Book'}</strong> · ${s.pages||0} pages · ${s.comp||0}% comp${s.notes?`<br><span style="font-size:11px">${s.notes}</span>`:''}</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('');
-  main.innerHTML=`<div class="stats-row"><div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Books Tracked</div><div class="stat-value">${books.length}</div></div><div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Pages</div><div class="stat-value">${tp}</div></div><div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Avg Comp</div><div class="stat-value">${ac}<span style="font-size:14px;color:var(--text-dim)">%</span></div></div><div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Sessions</div><div class="stat-value">${read.length}</div></div></div><div class="section-grid"><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📚</span> Books</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${booksHtml}</div></div><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📝</span> Recent</div></div><div class="panel-body">${feed||`<div class="empty-state"><div class="empty-icon">📖</div>No sessions yet.</div>`}</div></div></div>`;
+  main.innerHTML=`<div class="stats-row"><div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Books</div><div class="stat-value">${books.length}</div></div><div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Pages</div><div class="stat-value">${tp}</div></div><div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Avg Comp</div><div class="stat-value">${ac}<span style="font-size:14px;color:var(--text-dim)">%</span></div></div><div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Sessions</div><div class="stat-value">${read.length}</div></div></div><div class="section-grid"><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📚</span> Books</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${booksHtml}</div></div><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📝</span> Recent</div></div><div class="panel-body">${feed||`<div class="empty-state"><div class="empty-icon">📖</div>No sessions yet.</div>`}</div></div></div>`;
 }
 
 // ── Listening ──────────────────────────────────────────────
@@ -747,7 +666,7 @@ function renderHistory(main){
 
 // ── Modal ──────────────────────────────────────────────────
 function openModal(){document.getElementById('modal-overlay').classList.add('open');}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function closeModal(){blurActiveInput();document.getElementById('modal-overlay').classList.remove('open');}
 function handleOverlayClick(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
 function selectType(type,el){activeType=type;document.querySelectorAll('.type-tab').forEach(t=>t.classList.remove('selected'));el.classList.add('selected');document.querySelectorAll('.form-section').forEach(s=>s.classList.remove('visible'));document.getElementById('form-'+type).classList.add('visible');}
 async function submitLog(){
