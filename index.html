@@ -29,14 +29,37 @@
   .loading-bar-fill{height:100%;background:var(--gold);border-radius:2px;animation:loadBar 1.2s ease infinite;}
   @keyframes loadBar{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}
 
-  /* ── Layout ── */
-  .app-shell{display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:auto 1fr;min-height:100vh;transition:grid-template-columns 0.25s ease;}
-  .app-shell.sidebar-collapsed{grid-template-columns:0px 1fr;}
+  /* ── Desktop layout: sidebar + content side by side ── */
+  .app-shell{
+    display:flex;
+    flex-direction:row;
+    min-height:100vh;
+  }
 
   /* ── Sidebar ── */
-  .sidebar{grid-row:1/-1;background:var(--bg-card);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;transition:width 0.25s ease;width:var(--sidebar-w);}
-  .sidebar-inner{width:var(--sidebar-w);display:flex;flex-direction:column;height:100%;overflow-y:auto;padding:28px 0;}
-  .app-shell.sidebar-collapsed .sidebar{width:0;border-right:none;}
+  .sidebar{
+    width:var(--sidebar-w);
+    flex-shrink:0;
+    background:var(--bg-card);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow:hidden;
+    transition:width 0.25s ease;
+  }
+  .sidebar.collapsed{width:0;border-right:none;}
+  .sidebar-inner{
+    width:var(--sidebar-w);
+    flex-shrink:0;
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    overflow-y:auto;
+    padding:28px 0;
+  }
   .sidebar-logo{padding:0 24px 28px;border-bottom:1px solid var(--border-soft);margin-bottom:16px;white-space:nowrap;}
   .logo-jp{font-family:'DM Serif Display',serif;font-size:22px;color:var(--gold);letter-spacing:0.05em;line-height:1;margin-bottom:4px;}
   .logo-en{font-size:10px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);}
@@ -49,9 +72,14 @@
   .streak-number{font-family:'DM Mono',monospace;font-size:32px;font-weight:500;color:var(--gold);line-height:1;margin-bottom:2px;}
   .streak-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-dim);}
 
-  /* ── Mobile overlay backdrop ── */
-  .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:199;backdrop-filter:blur(2px);}
-  .sidebar-backdrop.visible{display:block;}
+  /* ── Right column (topbar + main) ── */
+  .content-col{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
 
   /* ── Topbar ── */
   .topbar{background:var(--bg-deep);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:100;}
@@ -66,8 +94,12 @@
   .hamburger{background:none;border:1px solid var(--border);border-radius:6px;padding:7px 9px;cursor:pointer;color:var(--text-secondary);font-size:16px;line-height:1;transition:all 0.15s;flex-shrink:0;}
   .hamburger:hover{background:var(--bg-hover);color:var(--text-primary);}
 
-  /* ── Main ── */
-  .main{padding:24px 28px;overflow-y:auto;display:flex;flex-direction:column;gap:22px;}
+  /* ── Main content ── */
+  .main{padding:24px 28px;flex:1;display:flex;flex-direction:column;gap:22px;}
+
+  /* ── Sidebar backdrop (mobile) ── */
+  .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:199;backdrop-filter:blur(2px);}
+  .sidebar-backdrop.visible{display:block;}
 
   /* ── Stats row ── */
   .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
@@ -150,7 +182,7 @@
   .output-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;}
   .tag{font-size:9.5px;padding:2px 7px;border-radius:10px;border:1px solid var(--border);color:var(--text-dim);font-weight:500;}
 
-  /* ── WaniKani styles ── */
+  /* ── WaniKani ── */
   .wk-srs-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:4px;}
   .wk-srs-card{border-radius:8px;padding:10px 8px;text-align:center;}
   .wk-srs-card .srs-label{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;}
@@ -163,9 +195,8 @@
   .wk-token-form{display:flex;gap:8px;margin-bottom:16px;}
   .wk-token-input{flex:1;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;}
   .wk-token-input:focus{border-color:var(--wk-pink);}
-  .wk-token-btn{background:var(--wk-pink);color:#fff;border:none;padding:9px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;transition:background 0.15s;white-space:nowrap;}
+  .wk-token-btn{background:var(--wk-pink);color:#fff;border:none;padding:9px 16px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
   .wk-token-btn:hover{background:#e0508f;}
-  .wk-level-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(243,101,167,0.1);border:1px solid rgba(243,101,167,0.3);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--wk-pink);margin-bottom:14px;}
   .wk-review-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border-soft);}
   .wk-review-item:last-child{border-bottom:none;}
   .wk-subject-type{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;width:36px;flex-shrink:0;text-align:center;padding:2px 4px;border-radius:4px;}
@@ -177,10 +208,6 @@
   .wk-srs-stage{font-size:10px;color:var(--text-dim);font-family:'DM Mono',monospace;}
   .wk-loading{text-align:center;padding:20px;color:var(--text-dim);font-size:12px;}
   .wk-error{background:rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.2);border-radius:8px;padding:12px;font-size:12.5px;color:#e07070;margin-bottom:12px;}
-  .wk-stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-  .wk-mini-stat{background:var(--bg-hover);border:1px solid var(--border-soft);border-radius:8px;padding:10px 12px;text-align:center;}
-  .wk-mini-stat .ms-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:500;line-height:1;margin-bottom:3px;}
-  .wk-mini-stat .ms-label{font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;}
   .wk-refresh-btn{font-size:10px;color:var(--text-dim);cursor:pointer;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:none;font-family:'Outfit',sans-serif;transition:all 0.15s;}
   .wk-refresh-btn:hover{color:var(--text-primary);border-color:var(--text-dim);}
 
@@ -191,7 +218,7 @@
   @keyframes modalIn{from{opacity:0;transform:translateY(12px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
   .modal-header{padding:18px 22px 14px;border-bottom:1px solid var(--border-soft);display:flex;justify-content:space-between;align-items:center;}
   .modal-title{font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;}
-  .modal-close{color:var(--text-dim);cursor:pointer;font-size:18px;line-height:1;transition:color 0.15s;}
+  .modal-close{color:var(--text-dim);cursor:pointer;font-size:18px;line-height:1;}
   .modal-close:hover{color:var(--text-primary);}
   .modal-body{padding:18px 22px 22px;}
   .form-group{margin-bottom:14px;}
@@ -212,6 +239,13 @@
   .btn-submit:disabled{opacity:0.6;cursor:not-allowed;}
   .form-section{display:none;}.form-section.visible{display:block;}
 
+  /* ── Mobile bottom nav ── */
+  .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg-card);border-top:1px solid var(--border);z-index:150;}
+  .mobile-nav-inner{display:flex;justify-content:space-around;align-items:stretch;}
+  .mobile-nav-item{display:flex;flex-direction:column;align-items:center;padding:10px 4px 12px;cursor:pointer;flex:1;gap:3px;border-top:2px solid transparent;transition:all 0.15s;font-size:9px;color:var(--text-dim);letter-spacing:0.04em;text-transform:uppercase;font-weight:500;}
+  .mobile-nav-item .mn-icon{font-size:18px;}
+  .mobile-nav-item.active{color:var(--gold);border-top-color:var(--gold);}
+
   /* ── Misc ── */
   ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
   .fade-in{opacity:0;transform:translateY(8px);animation:fadeUp 0.35s ease forwards;}
@@ -222,34 +256,52 @@
   .empty-state{text-align:center;padding:24px 16px;color:var(--text-dim);font-size:12.5px;line-height:1.6;}
   .empty-icon{font-size:26px;margin-bottom:8px;}
 
-  /* ── Mobile nav bar (bottom) ── */
-  .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg-card);border-top:1px solid var(--border);z-index:150;padding:0 8px;}
-  .mobile-nav-inner{display:flex;justify-content:space-around;align-items:stretch;}
-  .mobile-nav-item{display:flex;flex-direction:column;align-items:center;padding:10px 8px 12px;cursor:pointer;flex:1;gap:3px;border-top:2px solid transparent;transition:all 0.15s;font-size:9px;color:var(--text-dim);letter-spacing:0.05em;text-transform:uppercase;font-weight:500;}
-  .mobile-nav-item .mn-icon{font-size:18px;}
-  .mobile-nav-item.active{color:var(--gold);border-top-color:var(--gold);}
-
-  /* ── Responsive ── */
+  /* ── MOBILE BREAKPOINT ── */
   @media (max-width:768px) {
-    .app-shell{grid-template-columns:0px 1fr !important;}
-    .sidebar{position:fixed;left:0;top:0;height:100vh;z-index:200;transform:translateX(-100%);transition:transform 0.25s ease;width:var(--sidebar-w) !important;}
+    /* Sidebar becomes a fixed overlay, hidden by default */
+    .sidebar{
+      position:fixed;
+      left:0; top:0;
+      height:100vh;
+      z-index:200;
+      transform:translateX(-100%);
+      transition:transform 0.25s ease;
+      width:var(--sidebar-w) !important;
+    }
     .sidebar.mobile-open{transform:translateX(0);}
-    .app-shell.sidebar-collapsed .sidebar{transform:translateX(-100%);}
-    .main{padding:16px;padding-bottom:80px;}
+
+    /* Content column fills full width */
+    .content-col{width:100%;min-height:100vh;}
+
+    /* Main area needs bottom padding for the nav bar */
+    .main{padding:16px 16px 88px 16px;}
+
+    /* Stat cards: 2 columns */
     .stats-row{grid-template-columns:repeat(2,1fr);gap:10px;}
+    .stat-value{font-size:22px;}
+
+    /* Panels stack */
     .section-grid{grid-template-columns:1fr;}
+
+    /* WK grid: 3 cols on mobile */
     .wk-srs-grid{grid-template-columns:repeat(3,1fr);}
-    .wk-stats-row{grid-template-columns:1fr 1fr;}
+
+    /* Show mobile nav */
     .mobile-nav{display:block;}
+
+    /* Hide desktop-only elements */
     .level-pill{display:none;}
     .cloud-status{display:none;}
+
+    /* Topbar tighter */
     .topbar{padding:12px 16px;}
     .topbar-left h1{font-size:16px;}
   }
-  @media (max-width:480px) {
+
+  @media (max-width:420px){
     .stats-row{grid-template-columns:repeat(2,1fr);}
-    .stat-value{font-size:22px;}
     .wk-srs-grid{grid-template-columns:repeat(3,1fr);}
+    .form-row{grid-template-columns:1fr;}
   }
 </style>
 </head>
@@ -261,10 +313,12 @@
   <div class="loading-text">Loading your data…</div>
 </div>
 
-<!-- Sidebar backdrop (mobile) -->
+<!-- Mobile sidebar backdrop -->
 <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
 
 <div class="app-shell" id="app-shell" style="display:none">
+
+  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-inner">
       <div class="sidebar-logo">
@@ -288,23 +342,25 @@
     </div>
   </aside>
 
-  <div style="display:flex;flex-direction:column;min-height:100vh;overflow:hidden;">
+  <!-- Content column -->
+  <div class="content-col">
     <header class="topbar">
       <div class="topbar-left">
-        <button class="hamburger" onclick="toggleSidebar()" id="hamburger-btn">☰</button>
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
         <div>
           <h1 id="view-title">Good morning, Zach</h1>
           <div class="date-line" id="date-line"></div>
         </div>
       </div>
       <div class="topbar-right">
-        <span class="cloud-status" id="cloud-status">⏳ Connecting…</span>
-        <span class="level-pill" id="level-pill">N4 · ~3 yrs</span>
+        <span class="cloud-status" id="cloud-status">⏳</span>
+        <span class="level-pill">N4 · ~3 yrs</span>
         <button class="btn-log" onclick="openModal()">＋ Log</button>
       </div>
     </header>
     <main class="main" id="main-content"></main>
   </div>
+
 </div>
 
 <!-- Mobile bottom nav -->
@@ -333,7 +389,6 @@
         <button class="type-tab" onclick="selectType('listening',this)">🎧 Listen</button>
         <button class="type-tab" onclick="selectType('output',this)">💬 Output</button>
       </div>
-      <!-- Anki -->
       <div class="form-section visible" id="form-anki">
         <div class="form-row">
           <div class="form-group"><label class="form-label">Reviews Done</label><input class="form-input" type="number" id="anki-reviews" placeholder="e.g. 80" min="0"></div>
@@ -343,7 +398,6 @@
         <div class="form-group"><label class="form-label">Minutes Spent</label><div class="range-wrap"><input type="range" min="5" max="120" value="30" id="anki-mins" oninput="document.getElementById('anki-mins-val').textContent=this.value"><span class="range-val" id="anki-mins-val">30</span></div></div>
         <div class="form-group"><label class="form-label">Notes (optional)</label><textarea class="form-textarea" id="anki-notes" placeholder="Anything you noticed, struggled with, or nailed…"></textarea></div>
       </div>
-      <!-- Reading -->
       <div class="form-section" id="form-reading">
         <div class="form-group"><label class="form-label">Book / Material</label><input class="form-input" type="text" id="read-book" placeholder="e.g. Koguma no Kuuku"></div>
         <div class="form-row">
@@ -354,7 +408,6 @@
         <div class="form-group"><label class="form-label">Words Looked Up</label><input class="form-input" type="number" id="read-lookups" placeholder="e.g. 5" min="0"></div>
         <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="read-notes" placeholder="New words, grammar, impressions…"></textarea></div>
       </div>
-      <!-- Listening -->
       <div class="form-section" id="form-listening">
         <div class="form-group"><label class="form-label">Show / Material</label><input class="form-input" type="text" id="listen-show" placeholder="e.g. Shigatsu wa Kimi no Uso"></div>
         <div class="form-row">
@@ -365,7 +418,6 @@
         <div class="form-group"><label class="form-label">Subs Used</label><select class="form-select" id="listen-subs"><option value="none">No subs</option><option value="jp" selected>Japanese subs</option><option value="en">English subs</option></select></div>
         <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="listen-notes" placeholder="What you caught, what flew by…"></textarea></div>
       </div>
-      <!-- Output -->
       <div class="form-section" id="form-output">
         <div class="form-group"><label class="form-label">Output Type</label><select class="form-select" id="output-type-select"><option value="texting">Daily texting</option><option value="writing">Free writing</option><option value="speaking">Speaking practice</option><option value="other">Other</option></select></div>
         <div class="form-group"><label class="form-label">Minutes</label><div class="range-wrap"><input type="range" min="5" max="90" value="20" id="output-mins" oninput="document.getElementById('output-mins-val').textContent=this.value"><span class="range-val" id="output-mins-val">20</span></div></div>
@@ -387,7 +439,7 @@ const db=firebase.firestore();
 
 // ── State ──────────────────────────────────────────────────
 const state={streak:0,todayMinutes:0,totalSessions:0,weekMinutes:[0,0,0,0,0,0,0],sessions:[],allSessions:[],wkToken:localStorage.getItem('wk_token')||'',wkData:null};
-let currentView='dashboard',activeType='anki',sidebarOpen=false;
+let currentView='dashboard',activeType='anki';
 
 // ── Helpers ────────────────────────────────────────────────
 function todayStr(){return new Date().toISOString().slice(0,10);}
@@ -403,22 +455,20 @@ function sessionText(s){
 }
 function showToast(msg,isError=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(isError?' error':'');t.style.display='block';setTimeout(()=>t.style.display='none',2800);}
 
-// ── Sidebar toggle ─────────────────────────────────────────
+// ── Sidebar ────────────────────────────────────────────────
 function toggleSidebar(){
   const isMobile=window.innerWidth<=768;
   if(isMobile){
-    const sidebar=document.getElementById('sidebar');
-    const backdrop=document.getElementById('sidebar-backdrop');
-    sidebarOpen=!sidebarOpen;
-    sidebar.classList.toggle('mobile-open',sidebarOpen);
-    backdrop.classList.toggle('visible',sidebarOpen);
+    const sb=document.getElementById('sidebar');
+    const bd=document.getElementById('sidebar-backdrop');
+    const isOpen=sb.classList.contains('mobile-open');
+    sb.classList.toggle('mobile-open',!isOpen);
+    bd.classList.toggle('visible',!isOpen);
   } else {
-    const shell=document.getElementById('app-shell');
-    shell.classList.toggle('sidebar-collapsed');
+    document.getElementById('sidebar').classList.toggle('collapsed');
   }
 }
 function closeSidebar(){
-  sidebarOpen=false;
   document.getElementById('sidebar').classList.remove('mobile-open');
   document.getElementById('sidebar-backdrop').classList.remove('visible');
 }
@@ -437,11 +487,11 @@ async function loadData(){
     const week=[0,0,0,0,0,0,0],ws=new Date();ws.setHours(0,0,0,0);ws.setDate(ws.getDate()-ws.getDay());
     state.allSessions.forEach(s=>{const d=tsToDate(s.createdAt);if(d>=ws)week[d.getDay()]+=(s.minutes||0);});
     state.weekMinutes=week;
-    document.getElementById('cloud-status').textContent='☁️ Synced';
+    document.getElementById('cloud-status').textContent='☁️';
     document.getElementById('sidebar-streak').textContent=state.streak;
   }catch(e){
     console.error('Load error:',e);
-    document.getElementById('cloud-status').textContent='⚠️ Offline';
+    document.getElementById('cloud-status').textContent='⚠️';
     showToast('Could not reach cloud',true);
   }
 }
@@ -465,71 +515,60 @@ async function saveSession(data){
     await db.doc('meta/stats').set({streak:newStreak,totalSessions:(meta.totalSessions||0)+1,lastStudyDate:today,weekMinutes:wm,lastUpdated:firebase.firestore.FieldValue.serverTimestamp()});
     state.streak=newStreak;state.totalSessions++;state.todayMinutes+=(data.minutes||0);state.weekMinutes[dayIdx]=wm[dayIdx];
     document.getElementById('sidebar-streak').textContent=state.streak;
-    const full={id:ref.id,...data,createdAt:new Date()};
-    state.sessions.unshift(full);state.allSessions.unshift(full);
+    state.sessions.unshift({id:ref.id,...data,createdAt:new Date()});
+    state.allSessions.unshift({id:ref.id,...data,createdAt:new Date()});
     btn.disabled=false;btn.textContent='Save Session ✓';
-    closeModal();showToast('Session saved to cloud ✓');renderView(currentView);
+    closeModal();showToast('Session saved ✓');renderView(currentView);
   }catch(e){
     console.error('Save error:',e);btn.disabled=false;btn.textContent='Save Session ✓';
-    showToast('Save failed — check connection',true);
+    showToast('Save failed',true);
   }
 }
 
-// ── WaniKani API ───────────────────────────────────────────
+// ── WaniKani ───────────────────────────────────────────────
 async function fetchWaniKani(token){
   if(!token)return null;
   try{
-    const headers={'Wanikani-Revision':'20170710','Authorization':`Bearer ${token}`};
-    const [userRes,summaryRes,srsRes,recentRes]=await Promise.all([
-      fetch('https://api.wanikani.com/v2/user',{headers}),
-      fetch('https://api.wanikani.com/v2/summary',{headers}),
-      fetch('https://api.wanikani.com/v2/level_progressions?levels=1',{headers}),
-      fetch('https://api.wanikani.com/v2/assignments?immediately_available_for_review=true&page_after_id=0',{headers}),
+    const h={'Wanikani-Revision':'20170710','Authorization':`Bearer ${token}`};
+    const [userRes,summaryRes]=await Promise.all([
+      fetch('https://api.wanikani.com/v2/user',{headers:h}),
+      fetch('https://api.wanikani.com/v2/summary',{headers:h}),
     ]);
-    if(!userRes.ok)throw new Error('Invalid API token');
-    const [user,summary,_lp,recentAssign]=await Promise.all([userRes.json(),summaryRes.json(),srsRes.json(),recentRes.json()]);
-
-    // SRS counts
-    const srsRes2=await fetch('https://api.wanikani.com/v2/assignments?srs_stages=1,2,3,4,5,6,7,8,9&hidden=false',{headers});
-    const srsData=await srsRes2.json();
-    const srsCounts={apprentice1:0,apprentice2:0,apprentice3:0,apprentice4:0,guru1:0,guru2:0,master:0,enlightened:0,burned:0};
-    const stageMap={1:'apprentice1',2:'apprentice2',3:'apprentice3',4:'apprentice4',5:'guru1',6:'guru2',7:'master',8:'enlightened',9:'burned'};
-    (srsData.data||[]).forEach(a=>{const k=stageMap[a.data.srs_stage];if(k)srsCounts[k]++;});
-
-    // Recent review subjects (up to 10)
-    const reviewIds=(recentAssign.data||[]).slice(0,10).map(a=>a.data.subject_id);
+    if(!userRes.ok)throw new Error('Invalid API token — check wanikani.com/settings/personal-access-tokens');
+    const [user,summary]=await Promise.all([userRes.json(),summaryRes.json()]);
+    const srsRes=await fetch('https://api.wanikani.com/v2/assignments?hidden=false',{headers:h});
+    const srsData=await srsRes.json();
+    const sc={a1:0,a2:0,a3:0,a4:0,g1:0,g2:0,ma:0,en:0,bu:0};
+    const sm={1:'a1',2:'a2',3:'a3',4:'a4',5:'g1',6:'g2',7:'ma',8:'en',9:'bu'};
+    (srsData.data||[]).forEach(a=>{const k=sm[a.data.srs_stage];if(k)sc[k]++;});
+    const reviewIds=(summary.data?.reviews?.[0]?.subject_ids||[]).slice(0,10);
     let recentSubjects=[];
     if(reviewIds.length>0){
-      const subjRes=await fetch(`https://api.wanikani.com/v2/subjects?ids=${reviewIds.join(',')}`,{headers});
+      const subjRes=await fetch(`https://api.wanikani.com/v2/subjects?ids=${reviewIds.join(',')}`,{headers:h});
       const subjData=await subjRes.json();
+      // get srs stages for these subjects
+      const assignRes=await fetch(`https://api.wanikani.com/v2/assignments?subject_ids=${reviewIds.join(',')}`,{headers:h});
+      const assignData=await assignRes.json();
+      const stageBySubject={};
+      (assignData.data||[]).forEach(a=>{stageBySubject[a.data.subject_id]=a.data.srs_stage;});
       recentSubjects=(subjData.data||[]).map(s=>({
         id:s.id,type:s.object,
         chars:s.data.characters||s.data.slug||'?',
         meanings:(s.data.meanings||[]).filter(m=>m.primary).map(m=>m.meaning)[0]||'',
-        srsStage:(recentAssign.data||[]).find(a=>a.data.subject_id===s.id)?.data?.srs_stage||0,
+        srsStage:stageBySubject[s.id]||0,
       }));
     }
-
     return{
-      level:user.data.level,
-      username:user.data.username,
+      level:user.data.level,username:user.data.username,
       reviewsAvailable:summary.data?.reviews?.[0]?.subject_ids?.length||0,
       lessonsAvailable:summary.data?.lessons?.[0]?.subject_ids?.length||0,
-      srsCounts,
-      recentSubjects,
-      apprenticeTotal:srsCounts.apprentice1+srsCounts.apprentice2+srsCounts.apprentice3+srsCounts.apprentice4,
-      guruTotal:srsCounts.guru1+srsCounts.guru2,
+      sc,recentSubjects,
+      apprenticeTotal:sc.a1+sc.a2+sc.a3+sc.a4,
+      guruTotal:sc.g1+sc.g2,
     };
-  }catch(e){
-    console.error('WK error:',e);
-    return{error:e.message};
-  }
+  }catch(e){console.error('WK:',e);return{error:e.message};}
 }
-
-function srsStageLabel(stage){
-  const map={1:'Appr 1',2:'Appr 2',3:'Appr 3',4:'Appr 4',5:'Guru 1',6:'Guru 2',7:'Master',8:'Enlight.',9:'Burned'};
-  return map[stage]||'—';
-}
+function srsLabel(stage){return{1:'Appr 1',2:'Appr 2',3:'Appr 3',4:'Appr 4',5:'Guru 1',6:'Guru 2',7:'Master',8:'Enlight.',9:'Burned'}[stage]||'—';}
 
 // ── Heatmap ────────────────────────────────────────────────
 function buildHeatmap(){
@@ -537,12 +576,7 @@ function buildHeatmap(){
   const dateMap={},todayKey=todayStr();
   state.allSessions.forEach(s=>{const d=tsToDate(s.createdAt);const k=d.toISOString().slice(0,10);dateMap[k]=(dateMap[k]||0)+(s.minutes||0);});
   const cells=[];
-  for(let w=0;w<13;w++){const week=[];
-    for(let d=0;d<7;d++){const day=new Date(startDay);day.setDate(startDay.getDate()+w*7+d);const k=day.toISOString().slice(0,10);
-      if(k>todayKey){week.push(-1);continue;}
-      const mins=dateMap[k]||0;
-      week.push(k===todayKey?'today':mins===0?0:mins<30?1:mins<60?2:mins<90?3:4);
-    }cells.push(week);}
+  for(let w=0;w<13;w++){const week=[];for(let d=0;d<7;d++){const day=new Date(startDay);day.setDate(startDay.getDate()+w*7+d);const k=day.toISOString().slice(0,10);if(k>todayKey){week.push(-1);continue;}const mins=dateMap[k]||0;week.push(k===todayKey?'today':mins===0?0:mins<30?1:mins<60?2:mins<90?3:4);}cells.push(week);}
   return cells;
 }
 function heatmapHTML(){
@@ -563,9 +597,7 @@ function switchView(view){
   const order=['dashboard','anki','wanikani','reading','listening','output','history'];
   order.forEach((v,i)=>{if(v===view)document.querySelectorAll('.nav-item')[i]?.classList.add('active');});
   document.querySelectorAll('.mobile-nav-item').forEach(el=>el.classList.remove('active'));
-  const mobileOrder=['dashboard','anki','wanikani','reading','listening','output'];
-  const mIdx=mobileOrder.indexOf(view);
-  if(mIdx>=0)document.querySelectorAll('.mobile-nav-item')[mIdx]?.classList.add('active');
+  ['dashboard','anki','wanikani','reading','listening','output'].forEach((v,i)=>{if(v===view)document.querySelectorAll('.mobile-nav-item')[i]?.classList.add('active');});
   renderView(view);
 }
 function renderView(view){
@@ -581,43 +613,23 @@ function renderView(view){
 
 // ── Dashboard ──────────────────────────────────────────────
 function renderDashboard(main){
-  const days=['S','M','T','W','T','F','S'],maxM=Math.max(...state.weekMinutes,1),todayIdx=new Date().getDay();
-  const bars=state.weekMinutes.map((m,i)=>`<div class="sparkbar${i===todayIdx?' today':''}" style="height:${Math.max(Math.round((m/maxM)*36),2)}px" title="${m}min"></div>`).join('');
-  const weekTotal=state.weekMinutes.reduce((a,b)=>a+b,0);
-  const feedHtml=state.sessions.length===0
-    ?`<div class="empty-state"><div class="empty-icon">📭</div>No sessions today yet.<br>Hit <strong>+ Log</strong> to start.</div>`
-    :state.sessions.slice(0,8).map(s=>`<div class="log-entry"><div class="log-dot dot-${s.type}"></div><div class="log-text">${sessionText(s)}</div><div class="log-time">${formatTime(s.createdAt)}</div></div>`).join('');
-
-  // WaniKani summary widget for dashboard
+  const days=['S','M','T','W','T','F','S'],maxM=Math.max(...state.weekMinutes,1),ti=new Date().getDay();
+  const bars=state.weekMinutes.map((m,i)=>`<div class="sparkbar${i===ti?' today':''}" style="height:${Math.max(Math.round((m/maxM)*36),2)}px" title="${m}min"></div>`).join('');
+  const wt=state.weekMinutes.reduce((a,b)=>a+b,0);
+  const feed=state.sessions.length===0?`<div class="empty-state"><div class="empty-icon">📭</div>No sessions today yet.<br>Hit <strong>+ Log</strong> to start.</div>`:state.sessions.slice(0,8).map(s=>`<div class="log-entry"><div class="log-dot dot-${s.type}"></div><div class="log-text">${sessionText(s)}</div><div class="log-time">${formatTime(s.createdAt)}</div></div>`).join('');
   let wkWidget='';
-  if(state.wkData&&!state.wkData.error){
-    const wk=state.wkData;
-    wkWidget=`<div class="panel fade-in">
-      <div class="panel-header"><div class="panel-title"><span>🦀</span> WaniKani — Level ${wk.level}</div><span class="panel-action" onclick="switchView('wanikani')">Full view →</span></div>
-      <div class="panel-body">
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-          <div class="wk-mini-stat"><div class="ms-val" style="color:var(--wk-pink)">${wk.reviewsAvailable}</div><div class="ms-label">Reviews</div></div>
-          <div class="wk-mini-stat"><div class="ms-val" style="color:var(--wk-blue)">${wk.lessonsAvailable}</div><div class="ms-label">Lessons</div></div>
-          <div class="wk-mini-stat"><div class="ms-val" style="color:var(--wk-purple)">${wk.apprenticeTotal}</div><div class="ms-label">Apprentice</div></div>
-        </div>
-      </div>
-    </div>`;
-  } else if(state.wkToken&&state.wkData?.error){
-    wkWidget=`<div class="panel fade-in"><div class="panel-body"><div class="wk-error">⚠️ WaniKani: ${state.wkData.error}</div></div></div>`;
-  } else if(!state.wkToken){
-    wkWidget=`<div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🦀</span> WaniKani</div></div><div class="panel-body"><div class="empty-state" style="padding:12px"><div class="empty-icon">🦀</div>Connect WaniKani to see your stats.<br><button class="btn-log" style="margin-top:10px;font-size:12px" onclick="switchView('wanikani')">Connect →</button></div></div></div>`;
-  }
-
+  if(state.wkData&&!state.wkData.error){const wk=state.wkData;wkWidget=`<div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🦀</span> WaniKani — Level ${wk.level}</div><span class="panel-action" onclick="switchView('wanikani')">Full view →</span></div><div class="panel-body"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"><div style="background:var(--bg-hover);border:1px solid var(--border-soft);border-radius:8px;padding:10px;text-align:center"><div style="font-family:'DM Mono',monospace;font-size:22px;color:var(--wk-pink)">${wk.reviewsAvailable}</div><div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px">Reviews</div></div><div style="background:var(--bg-hover);border:1px solid var(--border-soft);border-radius:8px;padding:10px;text-align:center"><div style="font-family:'DM Mono',monospace;font-size:22px;color:var(--wk-blue)">${wk.lessonsAvailable}</div><div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px">Lessons</div></div><div style="background:var(--bg-hover);border:1px solid var(--border-soft);border-radius:8px;padding:10px;text-align:center"><div style="font-family:'DM Mono',monospace;font-size:22px;color:var(--wk-purple)">${wk.apprenticeTotal}</div><div style="font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px">Apprentice</div></div></div></div></div>`;}
+  else if(!state.wkToken){wkWidget=`<div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🦀</span> WaniKani</div></div><div class="panel-body"><div class="empty-state" style="padding:12px 0"><div class="empty-icon">🦀</div>Connect WaniKani to see your level &amp; SRS stats.<br><button class="btn-log" style="margin-top:10px;font-size:12px" onclick="switchView('wanikani')">Connect →</button></div></div></div>`;}
   main.innerHTML=`
     <div class="stats-row">
-      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Today's Study Time</div><div class="stat-value">${state.todayMinutes}<span style="font-size:14px;color:var(--text-dim)"> min</span></div><div class="stat-sub">~${(state.todayMinutes/60).toFixed(1)} hours</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Current Streak</div><div class="stat-value">${state.streak}<span style="font-size:14px;color:var(--text-dim)"> days</span></div><span class="stat-delta delta-up">🔥 Keep going</span></div>
-      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Total Sessions</div><div class="stat-value">${state.totalSessions}</div><div class="stat-sub">All types, all time</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">This Week</div><div class="stat-value">${weekTotal}<span style="font-size:14px;color:var(--text-dim)"> min</span></div><div style="margin-top:6px;height:3px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:${Math.min(100,Math.round(weekTotal/420*100))}%;background:var(--warning);border-radius:2px"></div></div></div>
+      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Today's Study</div><div class="stat-value">${state.todayMinutes}<span style="font-size:14px;color:var(--text-dim)"> min</span></div><div class="stat-sub">~${(state.todayMinutes/60).toFixed(1)} hours</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Streak</div><div class="stat-value">${state.streak}<span style="font-size:14px;color:var(--text-dim)"> days</span></div><span class="stat-delta delta-up">🔥 Keep going</span></div>
+      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Total Sessions</div><div class="stat-value">${state.totalSessions}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">This Week</div><div class="stat-value">${wt}<span style="font-size:14px;color:var(--text-dim)"> min</span></div><div style="margin-top:6px;height:3px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:${Math.min(100,Math.round(wt/420*100))}%;background:var(--warning);border-radius:2px"></div></div></div>
     </div>
     <div class="section-grid">
       <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📅</span> This Week</div></div><div class="panel-body"><div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Daily minutes · target 60/day</div><div class="sparkbar-row">${bars}</div><div class="sparkbar-labels">${days.map(d=>`<span class="sparkbar-label">${d}</span>`).join('')}</div></div></div>
-      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🕐</span> Today's Activity</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${feedHtml}</div></div>
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🕐</span> Today's Activity</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${feed}</div></div>
     </div>
     ${wkWidget}
     <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🗓</span> Activity — Last 3 Months</div><div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-dim)">Less <div style="width:10px;height:10px;border-radius:2px;background:var(--border)"></div><div style="width:10px;height:10px;border-radius:2px;background:rgba(212,168,83,0.3)"></div><div style="width:10px;height:10px;border-radius:2px;background:var(--gold)"></div> More</div></div><div class="panel-body">${heatmapHTML()}</div></div>`;
@@ -626,242 +638,111 @@ function renderDashboard(main){
 // ── WaniKani view ──────────────────────────────────────────
 function renderWaniKani(main){
   if(!state.wkToken){
-    main.innerHTML=`
-      <div class="panel fade-in">
-        <div class="panel-header"><div class="panel-title"><span>🦀</span> Connect WaniKani</div></div>
-        <div class="panel-body">
-          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6">Enter your WaniKani API token to pull in your level, SRS breakdown, available reviews, and recent items.<br><br>Find your token at <strong style="color:var(--text-primary)">wanikani.com → Settings → API Tokens</strong>. Generate a token with read-only access.</p>
-          <div class="wk-token-form">
-            <input class="wk-token-input" type="password" id="wk-token-field" placeholder="Paste your API token here…">
-            <button class="wk-token-btn" onclick="connectWaniKani()">Connect</button>
-          </div>
-          <p style="font-size:11px;color:var(--text-dim)">Your token is stored only in your browser's local storage and sent directly to WaniKani's API — never to any other server.</p>
-        </div>
-      </div>`;
+    main.innerHTML=`<div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🦀</span> Connect WaniKani</div></div><div class="panel-body"><p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6">Enter your WaniKani API token to pull in your level, SRS breakdown, available reviews &amp; recent items.<br><br>Go to <strong style="color:var(--text-primary)">wanikani.com → Settings → API Tokens</strong> and generate a read-only token.</p><div class="wk-token-form"><input class="wk-token-input" type="password" id="wk-token-field" placeholder="Paste your API token here…"><button class="wk-token-btn" onclick="connectWaniKani()">Connect</button></div><p style="font-size:11px;color:var(--text-dim)">Your token is stored in your browser's local storage only — sent directly to WaniKani's API, never to any other server.</p></div></div>`;
     return;
   }
-
   if(!state.wkData){
     main.innerHTML=`<div class="panel fade-in"><div class="panel-body"><div class="wk-loading">⏳ Loading WaniKani data…</div></div></div>`;
     fetchWaniKani(state.wkToken).then(data=>{state.wkData=data;renderView('wanikani');});
     return;
   }
-
   if(state.wkData.error){
-    main.innerHTML=`
-      <div class="panel fade-in">
-        <div class="panel-header"><div class="panel-title"><span>🦀</span> WaniKani</div></div>
-        <div class="panel-body">
-          <div class="wk-error">⚠️ ${state.wkData.error}</div>
-          <p style="font-size:12.5px;color:var(--text-secondary);margin-bottom:14px">Your token may be invalid or expired. Try reconnecting.</p>
-          <div class="wk-token-form">
-            <input class="wk-token-input" type="password" id="wk-token-field" placeholder="Paste new API token…">
-            <button class="wk-token-btn" onclick="connectWaniKani()">Reconnect</button>
-          </div>
-          <button onclick="disconnectWaniKani()" style="font-size:11px;color:var(--text-dim);background:none;border:none;cursor:pointer;margin-top:8px">Disconnect WaniKani</button>
-        </div>
-      </div>`;
+    main.innerHTML=`<div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🦀</span> WaniKani</div></div><div class="panel-body"><div class="wk-error">⚠️ ${state.wkData.error}</div><div class="wk-token-form"><input class="wk-token-input" type="password" id="wk-token-field" placeholder="Paste new API token…"><button class="wk-token-btn" onclick="connectWaniKani()">Reconnect</button></div><button onclick="disconnectWaniKani()" style="font-size:11px;color:var(--text-dim);background:none;border:none;cursor:pointer;margin-top:8px">Disconnect</button></div></div>`;
     return;
   }
-
   const wk=state.wkData;
-  const srsRows=[
-    {label:'Apprentice',cls:'wk-apprentice',val:wk.apprenticeTotal,sub:`${wk.srsCounts.apprentice1}·${wk.srsCounts.apprentice2}·${wk.srsCounts.apprentice3}·${wk.srsCounts.apprentice4}`},
-    {label:'Guru',cls:'wk-guru',val:wk.guruTotal,sub:`${wk.srsCounts.guru1}·${wk.srsCounts.guru2}`},
-    {label:'Master',cls:'wk-master',val:wk.srsCounts.master,sub:''},
-    {label:'Enlightened',cls:'wk-enlightened',val:wk.srsCounts.enlightened,sub:''},
-    {label:'Burned',cls:'wk-burned',val:wk.srsCounts.burned,sub:''},
+  const srsCards=[
+    {label:'Apprentice',cls:'wk-apprentice',val:wk.apprenticeTotal,sub:`${wk.sc.a1}·${wk.sc.a2}·${wk.sc.a3}·${wk.sc.a4}`},
+    {label:'Guru',cls:'wk-guru',val:wk.guruTotal,sub:`${wk.sc.g1}·${wk.sc.g2}`},
+    {label:'Master',cls:'wk-master',val:wk.sc.ma,sub:''},
+    {label:'Enlightened',cls:'wk-enlightened',val:wk.sc.en,sub:''},
+    {label:'Burned',cls:'wk-burned',val:wk.sc.bu,sub:''},
   ];
-  const srsGridHtml=srsRows.map(r=>`<div class="wk-srs-card ${r.cls}"><div class="srs-label">${r.label}</div><div class="srs-val">${r.val.toLocaleString()}</div>${r.sub?`<div style="font-size:9px;opacity:0.6;margin-top:3px">${r.sub}</div>`:''}</div>`).join('');
-
-  const recentHtml=wk.recentSubjects.length===0
-    ?`<div class="empty-state" style="padding:12px"><div class="empty-icon">🎉</div>No reviews available right now!</div>`
-    :wk.recentSubjects.map(s=>{
-        const typeClass=s.type==='radical'?'wk-rad':s.type==='kanji'?'wk-kan':'wk-voc';
-        const typeLabel=s.type==='radical'?'RAD':s.type==='kanji'?'KAN':'VOC';
-        return`<div class="wk-review-item">
-          <span class="wk-subject-type ${typeClass}">${typeLabel}</span>
-          <span class="wk-subject-chars">${s.chars}</span>
-          <span class="wk-subject-meaning">${s.meanings}</span>
-          <span class="wk-srs-stage">${srsStageLabel(s.srsStage)}</span>
-        </div>`;
-      }).join('');
-
+  const srsHtml=srsCards.map(r=>`<div class="wk-srs-card ${r.cls}"><div class="srs-label">${r.label}</div><div class="srs-val">${r.val.toLocaleString()}</div>${r.sub?`<div style="font-size:9px;opacity:0.6;margin-top:3px">${r.sub}</div>`:''}</div>`).join('');
+  const recentHtml=wk.recentSubjects.length===0?`<div class="empty-state" style="padding:12px 0"><div class="empty-icon">🎉</div>No reviews available right now!</div>`:wk.recentSubjects.map(s=>{const tc=s.type==='radical'?'wk-rad':s.type==='kanji'?'wk-kan':'wk-voc';const tl=s.type==='radical'?'RAD':s.type==='kanji'?'KAN':'VOC';return`<div class="wk-review-item"><span class="wk-subject-type ${tc}">${tl}</span><span class="wk-subject-chars">${s.chars}</span><span class="wk-subject-meaning">${s.meanings}</span><span class="wk-srs-stage">${srsLabel(s.srsStage)}</span></div>`;}).join('');
+  const pipeItems=[
+    {label:'Apprentice',val:wk.apprenticeTotal,max:500,color:'var(--wk-pink)',tip:'Keep under 100 for manageable reviews'},
+    {label:'Guru',val:wk.guruTotal,max:1000,color:'var(--wk-purple)',tip:''},
+    {label:'Master',val:wk.sc.ma,max:2000,color:'var(--wk-blue)',tip:''},
+    {label:'Enlightened',val:wk.sc.en,max:2000,color:'#60b8e0',tip:''},
+  ];
   main.innerHTML=`
     <div class="stats-row">
       <div class="stat-card fade-in" style="--accent:var(--wk-pink)"><div class="stat-label">WK Level</div><div class="stat-value">${wk.level}</div><div class="stat-sub">${wk.username}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--wk-pink)"><div class="stat-label">Reviews Available</div><div class="stat-value">${wk.reviewsAvailable}</div><div class="stat-sub">${wk.reviewsAvailable>0?'Go do them! 💪':'All clear ✓'}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--wk-blue)"><div class="stat-label">Lessons Available</div><div class="stat-value">${wk.lessonsAvailable}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--wk-purple)"><div class="stat-label">Apprentice</div><div class="stat-value">${wk.apprenticeTotal}</div><div class="stat-sub">Active learning items</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--wk-pink)"><div class="stat-label">Reviews Now</div><div class="stat-value">${wk.reviewsAvailable}</div><div class="stat-sub">${wk.reviewsAvailable>0?'Go do them! 💪':'All clear ✓'}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--wk-blue)"><div class="stat-label">Lessons</div><div class="stat-value">${wk.lessonsAvailable}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--wk-purple)"><div class="stat-label">Apprentice</div><div class="stat-value">${wk.apprenticeTotal}</div><div class="stat-sub">Active items</div></div>
     </div>
     <div class="panel fade-in">
-      <div class="panel-header">
-        <div class="panel-title"><span>📊</span> SRS Breakdown</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="wk-refresh-btn" onclick="refreshWaniKani()">↻ Refresh</button>
-          <button onclick="disconnectWaniKani()" style="font-size:10px;color:var(--text-dim);background:none;border:none;cursor:pointer">Disconnect</button>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="wk-srs-grid">${srsGridHtml}</div>
-        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-soft);font-size:11px;color:var(--text-dim)">
-          Total items: ${(wk.apprenticeTotal+wk.guruTotal+wk.srsCounts.master+wk.srsCounts.enlightened+wk.srsCounts.burned).toLocaleString()} · Burned: ${wk.srsCounts.burned.toLocaleString()}
-        </div>
-      </div>
+      <div class="panel-header"><div class="panel-title"><span>📊</span> SRS Breakdown</div><div style="display:flex;gap:8px;align-items:center"><button class="wk-refresh-btn" onclick="refreshWaniKani()">↻ Refresh</button><button onclick="disconnectWaniKani()" style="font-size:10px;color:var(--text-dim);background:none;border:none;cursor:pointer">Disconnect</button></div></div>
+      <div class="panel-body"><div class="wk-srs-grid">${srsHtml}</div><div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-soft);font-size:11px;color:var(--text-dim)">Total items: ${(wk.apprenticeTotal+wk.guruTotal+wk.sc.ma+wk.sc.en+wk.sc.bu).toLocaleString()} · Burned: ${wk.sc.bu.toLocaleString()}</div></div>
     </div>
     <div class="section-grid">
-      <div class="panel fade-in">
-        <div class="panel-header"><div class="panel-title"><span>🔔</span> Available for Review</div><span style="font-size:11px;color:var(--text-dim)">Up to 10 shown</span></div>
-        <div class="panel-body">${recentHtml}</div>
-      </div>
-      <div class="panel fade-in">
-        <div class="panel-header"><div class="panel-title"><span>💡</span> Level Progress</div></div>
-        <div class="panel-body">
-          <div style="margin-bottom:14px">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px">SRS pipeline health</div>
-            ${[
-              {label:'Apprentice (active)',val:wk.apprenticeTotal,max:500,color:'var(--wk-pink)',tip:'Keep under 100 for manageable reviews'},
-              {label:'Guru',val:wk.guruTotal,max:1000,color:'var(--wk-purple)',tip:''},
-              {label:'Master',val:wk.srsCounts.master,max:2000,color:'var(--wk-blue)',tip:''},
-              {label:'Enlightened',val:wk.srsCounts.enlightened,max:2000,color:'#60b8e0',tip:''},
-            ].map(item=>`
-              <div style="margin-bottom:10px">
-                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                  <span style="font-size:11.5px;color:var(--text-secondary)">${item.label}</span>
-                  <span style="font-family:'DM Mono',monospace;font-size:11px;color:${item.color}">${item.val}</span>
-                </div>
-                <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden">
-                  <div style="height:100%;width:${Math.min(100,Math.round(item.val/item.max*100))}%;background:${item.color};border-radius:2px"></div>
-                </div>
-                ${item.tip?`<div style="font-size:9.5px;color:var(--text-dim);margin-top:2px">${item.tip}</div>`:''}
-              </div>`).join('')}
-          </div>
-          <div style="padding-top:12px;border-top:1px solid var(--border-soft)">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px">🔥 Burned items: ${wk.srsCounts.burned.toLocaleString()}</div>
-            <div style="font-size:11px;color:var(--text-dim)">These are permanently learned — no more reviews needed.</div>
-          </div>
-        </div>
-      </div>
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🔔</span> Available for Review</div><span style="font-size:11px;color:var(--text-dim)">Up to 10 shown</span></div><div class="panel-body">${recentHtml}</div></div>
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>💡</span> Pipeline Health</div></div><div class="panel-body">${pipeItems.map(item=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11.5px;color:var(--text-secondary)">${item.label}</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:${item.color}">${item.val}</span></div><div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:${Math.min(100,Math.round(item.val/item.max*100))}%;background:${item.color};border-radius:2px"></div></div>${item.tip?`<div style="font-size:9.5px;color:var(--text-dim);margin-top:2px">${item.tip}</div>`:''}</div>`).join('')}<div style="padding-top:12px;border-top:1px solid var(--border-soft);font-size:11px;color:var(--text-dim)">🔥 Burned: ${wk.sc.bu.toLocaleString()} items permanently learned</div></div></div>
     </div>`;
 }
 
 async function connectWaniKani(){
   const token=document.getElementById('wk-token-field')?.value?.trim();
   if(!token)return showToast('Please enter your API token',true);
-  state.wkToken=token;
-  localStorage.setItem('wk_token',token);
-  state.wkData=null;
-  showToast('Connecting to WaniKani…');
-  renderView('wanikani');
+  state.wkToken=token;localStorage.setItem('wk_token',token);state.wkData=null;
+  showToast('Connecting to WaniKani…');renderView('wanikani');
 }
-
-function disconnectWaniKani(){
-  state.wkToken='';state.wkData=null;
-  localStorage.removeItem('wk_token');
-  renderView('wanikani');
-}
-
-async function refreshWaniKani(){
-  state.wkData=null;
-  showToast('Refreshing WaniKani data…');
-  renderView('wanikani');
-}
+function disconnectWaniKani(){state.wkToken='';state.wkData=null;localStorage.removeItem('wk_token');renderView('wanikani');}
+function refreshWaniKani(){state.wkData=null;showToast('Refreshing…');renderView('wanikani');}
 
 // ── Anki ───────────────────────────────────────────────────
 function renderAnki(main){
-  const anki=state.allSessions.filter(s=>s.type==='anki'),todayAnki=state.sessions.filter(s=>s.type==='anki');
-  const totalReviews=anki.reduce((a,s)=>a+(s.reviews||0),0),todayReviews=todayAnki.reduce((a,s)=>a+(s.reviews||0),0);
+  const anki=state.allSessions.filter(s=>s.type==='anki'),tA=state.sessions.filter(s=>s.type==='anki');
+  const tR=anki.reduce((a,s)=>a+(s.reviews||0),0),todR=tA.reduce((a,s)=>a+(s.reviews||0),0);
   const week=[0,0,0,0,0,0,0],ws=new Date();ws.setHours(0,0,0,0);ws.setDate(ws.getDate()-ws.getDay());
   anki.forEach(s=>{const d=tsToDate(s.createdAt);if(d>=ws)week[d.getDay()]+=(s.reviews||0);});
-  const maxR=Math.max(...week,1),todayIdx=new Date().getDay();
-  const bars=week.map((r,i)=>`<div class="sparkbar${i===todayIdx?' today':''}" style="height:${Math.max(Math.round((r/maxR)*36),2)}px" title="${r}"></div>`).join('');
-  const feedHtml=anki.length===0?`<div class="empty-state"><div class="empty-icon">🃏</div>No Anki sessions yet.</div>`:anki.slice(0,6).map(s=>`<div class="log-entry"><div class="log-dot dot-anki"></div><div class="log-text"><strong>${s.deck||'Deck'}</strong> · ${s.reviews||0} reviews, ${s.newCards||0} new${s.notes?`<br><span style="font-size:11px">${s.notes}</span>`:''}</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('');
-  main.innerHTML=`
-    <div class="stats-row">
-      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Reviews Today</div><div class="stat-value">${todayReviews}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">All-time Reviews</div><div class="stat-value">${totalReviews}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Sessions Logged</div><div class="stat-value">${anki.length}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">This Week</div><div class="stat-value">${week.reduce((a,b)=>a+b,0)}<span style="font-size:14px;color:var(--text-dim)"> rev</span></div></div>
-    </div>
-    <div class="section-grid">
-      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📈</span> Weekly Reviews</div></div><div class="panel-body"><div class="sparkbar-row">${bars}</div><div class="sparkbar-labels">${['S','M','T','W','T','F','S'].map(d=>`<span class="sparkbar-label">${d}</span>`).join('')}</div></div></div>
-      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🃏</span> Recent Sessions</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${feedHtml}</div></div>
-    </div>`;
+  const maxR=Math.max(...week,1),ti=new Date().getDay();
+  const bars=week.map((r,i)=>`<div class="sparkbar${i===ti?' today':''}" style="height:${Math.max(Math.round((r/maxR)*36),2)}px"></div>`).join('');
+  const feed=anki.length===0?`<div class="empty-state"><div class="empty-icon">🃏</div>No Anki sessions yet.</div>`:anki.slice(0,6).map(s=>`<div class="log-entry"><div class="log-dot dot-anki"></div><div class="log-text"><strong>${s.deck||'Deck'}</strong> · ${s.reviews||0} reviews, ${s.newCards||0} new${s.notes?`<br><span style="font-size:11px">${s.notes}</span>`:''}</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('');
+  main.innerHTML=`<div class="stats-row"><div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Reviews Today</div><div class="stat-value">${todR}</div></div><div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">All-time Reviews</div><div class="stat-value">${tR}</div></div><div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Sessions</div><div class="stat-value">${anki.length}</div></div><div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">This Week</div><div class="stat-value">${week.reduce((a,b)=>a+b,0)}<span style="font-size:14px;color:var(--text-dim)"> rev</span></div></div></div><div class="section-grid"><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📈</span> Weekly Reviews</div></div><div class="panel-body"><div class="sparkbar-row">${bars}</div><div class="sparkbar-labels">${['S','M','T','W','T','F','S'].map(d=>`<span class="sparkbar-label">${d}</span>`).join('')}</div></div></div><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🃏</span> Recent Sessions</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${feed}</div></div></div>`;
 }
 
 // ── Reading ────────────────────────────────────────────────
 function renderReading(main){
   const read=state.allSessions.filter(s=>s.type==='reading');
-  const totalPages=read.reduce((a,s)=>a+(s.pages||0),0),avgComp=read.length?Math.round(read.reduce((a,s)=>a+(s.comp||0),0)/read.length):0;
-  const bookMap={};
-  read.forEach(s=>{const k=s.book||'Unknown';if(!bookMap[k])bookMap[k]={pages:0,sessions:0,comp:[]};bookMap[k].pages+=(s.pages||0);bookMap[k].sessions++;bookMap[k].comp.push(s.comp||0);});
-  const books=Object.entries(bookMap).map(([t,d])=>({title:t,pages:d.pages,sessions:d.sessions,avgComp:Math.round(d.comp.reduce((a,b)=>a+b,0)/d.comp.length)}));
+  const tp=read.reduce((a,s)=>a+(s.pages||0),0),ac=read.length?Math.round(read.reduce((a,s)=>a+(s.comp||0),0)/read.length):0;
+  const bm={};read.forEach(s=>{const k=s.book||'Unknown';if(!bm[k])bm[k]={pages:0,sessions:0,comp:[]};bm[k].pages+=(s.pages||0);bm[k].sessions++;bm[k].comp.push(s.comp||0);});
+  const books=Object.entries(bm).map(([t,d])=>({title:t,pages:d.pages,sessions:d.sessions,avgComp:Math.round(d.comp.reduce((a,b)=>a+b,0)/d.comp.length)}));
   const booksHtml=books.length===0?`<div class="empty-state"><div class="empty-icon">📖</div>No reading sessions yet.</div>`:books.map(b=>`<div class="book-card"><div class="book-spine active">${b.title.slice(0,8)}</div><div class="book-info"><div class="book-title">${b.title}</div><div class="book-meta">${b.pages} pages · ${b.sessions} sessions</div><div class="comp-bar" style="margin-top:6px"><span class="comp-label">Avg comp</span><div class="comp-track"><div class="comp-fill" style="width:${b.avgComp}%;background:var(--sage)"></div></div><span class="comp-pct" style="color:var(--sage)">${b.avgComp}%</span></div></div></div>`).join('');
-  const feedHtml=read.slice(0,6).map(s=>`<div class="log-entry"><div class="log-dot dot-reading"></div><div class="log-text"><strong>${s.book||'Book'}</strong> · ${s.pages||0} pages · ${s.comp||0}% comp${s.notes?`<br><span style="font-size:11px">${s.notes}</span>`:''}</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('');
-  main.innerHTML=`
-    <div class="stats-row">
-      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Books Tracked</div><div class="stat-value">${books.length}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Pages</div><div class="stat-value">${totalPages}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Avg Comprehension</div><div class="stat-value">${avgComp}<span style="font-size:14px;color:var(--text-dim)">%</span></div></div>
-      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Sessions</div><div class="stat-value">${read.length}</div></div>
-    </div>
-    <div class="section-grid">
-      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📚</span> Books</div><span class="panel-action" onclick="openModal()">+ Log pages</span></div><div class="panel-body">${booksHtml}</div></div>
-      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📝</span> Recent Sessions</div></div><div class="panel-body">${feedHtml||`<div class="empty-state"><div class="empty-icon">📖</div>No sessions yet.</div>`}</div></div>
-    </div>`;
+  const feed=read.slice(0,6).map(s=>`<div class="log-entry"><div class="log-dot dot-reading"></div><div class="log-text"><strong>${s.book||'Book'}</strong> · ${s.pages||0} pages · ${s.comp||0}% comp${s.notes?`<br><span style="font-size:11px">${s.notes}</span>`:''}</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('');
+  main.innerHTML=`<div class="stats-row"><div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Books Tracked</div><div class="stat-value">${books.length}</div></div><div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Pages</div><div class="stat-value">${tp}</div></div><div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Avg Comp</div><div class="stat-value">${ac}<span style="font-size:14px;color:var(--text-dim)">%</span></div></div><div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Sessions</div><div class="stat-value">${read.length}</div></div></div><div class="section-grid"><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📚</span> Books</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${booksHtml}</div></div><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📝</span> Recent</div></div><div class="panel-body">${feed||`<div class="empty-state"><div class="empty-icon">📖</div>No sessions yet.</div>`}</div></div></div>`;
 }
 
 // ── Listening ──────────────────────────────────────────────
 function renderListening(main){
   const lis=state.allSessions.filter(s=>s.type==='listening');
-  const totalEps=lis.reduce((a,s)=>a+(parseInt(s.eps)||0),0),avgComp=lis.length?Math.round(lis.reduce((a,s)=>a+(s.comp||0),0)/lis.length):0,totalMins=lis.reduce((a,s)=>a+(s.minutes||0),0);
-  const showMap={};
-  lis.forEach(s=>{const k=s.show||'Unknown';if(!showMap[k])showMap[k]={eps:0,comp:[]};showMap[k].eps+=(parseInt(s.eps)||0);showMap[k].comp.push(s.comp||0);});
-  const shows=Object.entries(showMap).map(([t,d])=>({title:t,eps:d.eps,avgComp:Math.round(d.comp.reduce((a,b)=>a+b,0)/d.comp.length)}));
-  const showsHtml=shows.length===0?`<div class="empty-state"><div class="empty-icon">🎧</div>No listening sessions yet.</div>`:shows.map(s=>`<div class="listen-item"><div class="listen-thumb">🎬</div><div class="listen-info"><div class="listen-title">${s.title}</div><div class="listen-meta">${s.eps} episodes watched</div><div class="comp-bar"><span class="comp-label">Avg comp</span><div class="comp-track"><div class="comp-fill" style="width:${s.avgComp}%"></div></div><span class="comp-pct">${s.avgComp}%</span></div></div></div>`).join('');
-  const feedHtml=lis.slice(0,5).map(s=>`<div class="log-entry"><div class="log-dot dot-listening"></div><div class="log-text"><strong>${s.show||'Show'}</strong> · +${s.eps||1} eps · ${s.subs||'JP subs'} · ${s.comp||0}% comp</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('');
-  main.innerHTML=`
-    <div class="stats-row">
-      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Shows Tracked</div><div class="stat-value">${shows.length}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Episodes</div><div class="stat-value">${totalEps}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Avg Comprehension</div><div class="stat-value">${avgComp}<span style="font-size:14px;color:var(--text-dim)">%</span></div>${avgComp<60&&lis.length>0?`<div class="stat-sub" style="color:var(--blue-soft);margin-top:4px">⚠️ Known weak spot</div>`:''}</div>
-      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Total Hours</div><div class="stat-value">${(totalMins/60).toFixed(1)}</div></div>
-    </div>
-    <div class="section-grid">
-      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🎬</span> Shows</div><span class="panel-action" onclick="openModal()">+ Log episode</span></div><div class="panel-body">${showsHtml}</div></div>
-      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📝</span> Recent Sessions</div></div><div class="panel-body">${feedHtml||`<div class="empty-state"><div class="empty-icon">🎧</div>No sessions yet.</div>`}</div></div>
-    </div>`;
+  const te=lis.reduce((a,s)=>a+(parseInt(s.eps)||0),0),ac=lis.length?Math.round(lis.reduce((a,s)=>a+(s.comp||0),0)/lis.length):0,tm=lis.reduce((a,s)=>a+(s.minutes||0),0);
+  const sm={};lis.forEach(s=>{const k=s.show||'Unknown';if(!sm[k])sm[k]={eps:0,comp:[]};sm[k].eps+=(parseInt(s.eps)||0);sm[k].comp.push(s.comp||0);});
+  const shows=Object.entries(sm).map(([t,d])=>({title:t,eps:d.eps,avgComp:Math.round(d.comp.reduce((a,b)=>a+b,0)/d.comp.length)}));
+  const showsHtml=shows.length===0?`<div class="empty-state"><div class="empty-icon">🎧</div>No listening sessions yet.</div>`:shows.map(s=>`<div class="listen-item"><div class="listen-thumb">🎬</div><div class="listen-info"><div class="listen-title">${s.title}</div><div class="listen-meta">${s.eps} eps watched</div><div class="comp-bar"><span class="comp-label">Avg comp</span><div class="comp-track"><div class="comp-fill" style="width:${s.avgComp}%"></div></div><span class="comp-pct">${s.avgComp}%</span></div></div></div>`).join('');
+  const feed=lis.slice(0,5).map(s=>`<div class="log-entry"><div class="log-dot dot-listening"></div><div class="log-text"><strong>${s.show||'Show'}</strong> · +${s.eps||1} eps · ${s.subs||'JP subs'} · ${s.comp||0}% comp</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('');
+  main.innerHTML=`<div class="stats-row"><div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Shows</div><div class="stat-value">${shows.length}</div></div><div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Episodes</div><div class="stat-value">${te}</div></div><div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Avg Comp</div><div class="stat-value">${ac}<span style="font-size:14px;color:var(--text-dim)">%</span></div>${ac<60&&lis.length>0?`<div class="stat-sub" style="color:var(--blue-soft);margin-top:4px">⚠️ Weak spot</div>`:''}</div><div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Total Hours</div><div class="stat-value">${(tm/60).toFixed(1)}</div></div></div><div class="section-grid"><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🎬</span> Shows</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${showsHtml}</div></div><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📝</span> Recent</div></div><div class="panel-body">${feed||`<div class="empty-state"><div class="empty-icon">🎧</div>No sessions yet.</div>`}</div></div></div>`;
 }
 
 // ── Output ─────────────────────────────────────────────────
 function renderOutput(main){
   const out=state.allSessions.filter(s=>s.type==='output');
-  const totalMins=out.reduce((a,s)=>a+(s.minutes||0),0),todayOut=state.sessions.filter(s=>s.type==='output').length;
-  const entriesHtml=out.length===0?`<div class="empty-state"><div class="empty-icon">💬</div>No output sessions yet.</div>`:out.slice(0,10).map(s=>`<div class="output-entry"><div class="output-header"><div class="output-type-label">${s.outputType||'texting'}</div><div class="output-date">${formatDate(s.createdAt)}</div></div><div class="output-content">${s.notes||'Session logged.'}</div>${s.topics?`<div class="output-tags">${s.topics.split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}</div>`:''}</div>`).join('');
-  main.innerHTML=`
-    <div class="stats-row">
-      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Sessions Total</div><div class="stat-value">${out.length}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Minutes</div><div class="stat-value">${totalMins}</div></div>
-      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Today</div><div class="stat-value">${todayOut}<span style="font-size:14px;color:var(--text-dim)"> sessions</span></div></div>
-      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Avg Min / Session</div><div class="stat-value">${out.length?Math.round(totalMins/out.length):0}</div></div>
-    </div>
-    <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>💬</span> Output Journal</div><span class="panel-action" onclick="openModal()">+ Log session</span></div><div class="panel-body">${entriesHtml}</div></div>`;
+  const tm=out.reduce((a,s)=>a+(s.minutes||0),0),tod=state.sessions.filter(s=>s.type==='output').length;
+  const entries=out.length===0?`<div class="empty-state"><div class="empty-icon">💬</div>No output sessions yet.</div>`:out.slice(0,10).map(s=>`<div class="output-entry"><div class="output-header"><div class="output-type-label">${s.outputType||'texting'}</div><div class="output-date">${formatDate(s.createdAt)}</div></div><div class="output-content">${s.notes||'Session logged.'}</div>${s.topics?`<div class="output-tags">${s.topics.split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}</div>`:''}</div>`).join('');
+  main.innerHTML=`<div class="stats-row"><div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Sessions</div><div class="stat-value">${out.length}</div></div><div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Minutes</div><div class="stat-value">${tm}</div></div><div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Today</div><div class="stat-value">${tod}</div></div><div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Avg Min</div><div class="stat-value">${out.length?Math.round(tm/out.length):0}</div></div></div><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>💬</span> Output Journal</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${entries}</div></div>`;
 }
 
 // ── History ────────────────────────────────────────────────
 function renderHistory(main){
-  const all=state.allSessions,byMins={anki:0,reading:0,listening:0,output:0};
-  all.forEach(s=>{if(byMins[s.type]!==undefined)byMins[s.type]+=(s.minutes||0);});
-  const totalMins=Object.values(byMins).reduce((a,b)=>a+b,0);
-  const items=[{label:'Anki / Flashcards',color:'var(--gold)',mins:byMins.anki},{label:'Reading',color:'var(--sage)',mins:byMins.reading},{label:'Listening',color:'var(--blue-soft)',mins:byMins.listening},{label:'Output',color:'var(--warning)',mins:byMins.output}];
-  const breakdownHtml=items.map(item=>{const pct=totalMins>0?Math.round(item.mins/totalMins*100):0;return`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12.5px">${item.label}</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:${item.color}">${pct}% · ${item.mins}m</span></div><div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${item.color};border-radius:3px"></div></div></div>`;}).join('');
-  const recentHtml=all.slice(0,12).map(s=>`<div class="log-entry"><div class="log-dot dot-${s.type}"></div><div class="log-text">${sessionText(s)}</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('')||`<div class="empty-state"><div class="empty-icon">📊</div>No sessions yet.</div>`;
-  main.innerHTML=`
-    <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🗓</span> Activity Heatmap — Last 3 Months</div></div><div class="panel-body">${heatmapHTML()}</div></div>
-    <div class="section-grid">
-      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📊</span> All-time Breakdown</div></div><div class="panel-body">${breakdownHtml}<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-soft);font-size:11px;color:var(--text-dim)">${all.length} total sessions · ${totalMins} total minutes</div></div></div>
-      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🕐</span> Recent Sessions</div></div><div class="panel-body">${recentHtml}</div></div>
-    </div>`;
+  const all=state.allSessions,bm={anki:0,reading:0,listening:0,output:0};
+  all.forEach(s=>{if(bm[s.type]!==undefined)bm[s.type]+=(s.minutes||0);});
+  const tm=Object.values(bm).reduce((a,b)=>a+b,0);
+  const items=[{label:'Anki',color:'var(--gold)',mins:bm.anki},{label:'Reading',color:'var(--sage)',mins:bm.reading},{label:'Listening',color:'var(--blue-soft)',mins:bm.listening},{label:'Output',color:'var(--warning)',mins:bm.output}];
+  const bd=items.map(i=>{const p=tm>0?Math.round(i.mins/tm*100):0;return`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12.5px">${i.label}</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:${i.color}">${p}% · ${i.mins}m</span></div><div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:${p}%;background:${i.color};border-radius:3px"></div></div></div>`;}).join('');
+  const recent=all.slice(0,12).map(s=>`<div class="log-entry"><div class="log-dot dot-${s.type}"></div><div class="log-text">${sessionText(s)}</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('')||`<div class="empty-state"><div class="empty-icon">📊</div>No sessions yet.</div>`;
+  main.innerHTML=`<div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🗓</span> Activity — Last 3 Months</div></div><div class="panel-body">${heatmapHTML()}</div></div><div class="section-grid"><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📊</span> Breakdown</div></div><div class="panel-body">${bd}<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-soft);font-size:11px;color:var(--text-dim)">${all.length} sessions · ${tm} total minutes</div></div></div><div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🕐</span> Recent</div></div><div class="panel-body">${recent}</div></div></div>`;
 }
 
 // ── Modal ──────────────────────────────────────────────────
@@ -869,7 +750,6 @@ function openModal(){document.getElementById('modal-overlay').classList.add('ope
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
 function handleOverlayClick(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
 function selectType(type,el){activeType=type;document.querySelectorAll('.type-tab').forEach(t=>t.classList.remove('selected'));el.classList.add('selected');document.querySelectorAll('.form-section').forEach(s=>s.classList.remove('visible'));document.getElementById('form-'+type).classList.add('visible');}
-
 async function submitLog(){
   let data={type:activeType};
   if(activeType==='anki')data={...data,reviews:parseInt(document.getElementById('anki-reviews').value)||0,newCards:parseInt(document.getElementById('anki-new').value)||0,deck:document.getElementById('anki-deck').value||'Deck',minutes:parseInt(document.getElementById('anki-mins').value)||30,notes:document.getElementById('anki-notes').value};
@@ -884,12 +764,9 @@ async function boot(){
   const now=new Date(),days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   document.getElementById('date-line').textContent=`${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()} ${now.getFullYear()}`;
   await loadData();
-  // Pre-fetch WaniKani if token exists
-  if(state.wkToken){
-    fetchWaniKani(state.wkToken).then(data=>{state.wkData=data;if(currentView==='dashboard'||currentView==='wanikani')renderView(currentView);});
-  }
+  if(state.wkToken)fetchWaniKani(state.wkToken).then(data=>{state.wkData=data;if(currentView==='dashboard'||currentView==='wanikani')renderView(currentView);});
   document.getElementById('loading-screen').style.display='none';
-  document.getElementById('app-shell').style.display='grid';
+  document.getElementById('app-shell').style.display='flex';
   renderView('dashboard');
 }
 boot();
