@@ -1,1 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>指令部 — Japanese Command Station</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+  :root {
+    --bg-deep:#0f0e0d;--bg-card:#1a1917;--bg-hover:#222120;--border:#2e2c2a;--border-soft:#232120;
+    --gold:#d4a853;--gold-dim:#9a7a3c;--gold-glow:rgba(212,168,83,0.12);
+    --sage:#7aad8c;--blue-soft:#5b8fb9;--warning:#e09b4a;--red-jp:#c0392b;
+    --text-primary:#f0ece4;--text-secondary:#9a9590;--text-dim:#5a5650;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Outfit',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:0.4;}
+  .loading-screen{position:fixed;inset:0;background:var(--bg-deep);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:999;}
+  .loading-logo{font-family:'DM Serif Display',serif;font-size:48px;color:var(--gold);}
+  .loading-text{font-size:12px;color:var(--text-dim);letter-spacing:0.15em;text-transform:uppercase;}
+  .loading-bar{width:120px;height:2px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .loading-bar-fill{height:100%;background:var(--gold);border-radius:2px;animation:loadBar 1.2s ease infinite;}
+  @keyframes loadBar{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}
+  .app-shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:auto 1fr;min-height:100vh;}
+  .sidebar{grid-row:1/-1;background:var(--bg-card);border-right:1px solid var(--border);padding:28px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  .sidebar-logo{padding:0 24px 28px;border-bottom:1px solid var(--border-soft);margin-bottom:16px;}
+  .logo-jp{font-family:'DM Serif Display',serif;font-size:22px;color:var(--gold);letter-spacing:0.05em;line-height:1;margin-bottom:4px;}
+  .logo-en{font-size:10px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);}
+  .nav-section-label{font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-dim);padding:16px 24px 6px;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 24px;cursor:pointer;border-left:2px solid transparent;transition:all 0.15s;font-size:13.5px;color:var(--text-secondary);}
+  .nav-item:hover{background:var(--bg-hover);color:var(--text-primary);border-left-color:var(--border);}
+  .nav-item.active{background:var(--gold-glow);color:var(--gold);border-left-color:var(--gold);font-weight:500;}
+  .nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+  .streak-badge{margin:auto 24px 24px;background:linear-gradient(135deg,#1e1c18,#2a2720);border:1px solid var(--gold-dim);border-radius:10px;padding:14px;text-align:center;}
+  .streak-number{font-family:'DM Mono',monospace;font-size:32px;font-weight:500;color:var(--gold);line-height:1;margin-bottom:2px;}
+  .streak-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-dim);}
+  .topbar{background:var(--bg-deep);border-bottom:1px solid var(--border);padding:18px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:100;}
+  .topbar-left h1{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;line-height:1.1;}
+  .topbar-left .date-line{font-size:11px;color:var(--text-dim);letter-spacing:0.06em;margin-top:2px;}
+  .topbar-right{display:flex;align-items:center;gap:12px;}
+  .btn-log{background:var(--gold);color:#0f0e0d;border:none;padding:8px 18px;border-radius:6px;font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+  .btn-log:hover{background:#e0b860;transform:translateY(-1px);}
+  .level-pill{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500;color:var(--text-secondary);font-family:'DM Mono',monospace;}
+  .cloud-status{font-size:10px;color:var(--text-dim);}
+  .main{padding:28px 32px;overflow-y:auto;display:flex;flex-direction:column;gap:24px;}
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+  .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--gold));opacity:0.6;}
+  .stat-card:hover{border-color:#3a3835;}
+  .stat-label{font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;}
+  .stat-value{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--text-primary);line-height:1;margin-bottom:4px;}
+  .stat-sub{font-size:11px;color:var(--text-secondary);}
+  .stat-delta{font-size:10.5px;font-weight:500;padding:2px 6px;border-radius:4px;display:inline-block;margin-top:6px;}
+  .delta-up{background:rgba(122,173,140,0.12);color:var(--sage);}
+  .section-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .panel{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+  .panel-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border-soft);}
+  .panel-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text-primary);}
+  .panel-action{font-size:11px;color:var(--gold);cursor:pointer;font-weight:500;opacity:0.8;transition:opacity 0.15s;}
+  .panel-action:hover{opacity:1;}
+  .panel-body{padding:16px 20px;}
+  .log-entry{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--border-soft);align-items:flex-start;}
+  .log-entry:last-child{border-bottom:none;padding-bottom:0;}
+  .log-entry:first-child{padding-top:0;}
+  .log-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+  .dot-anki{background:var(--gold);}.dot-reading{background:var(--sage);}.dot-listening{background:var(--blue-soft);}.dot-output{background:var(--warning);}
+  .log-text{font-size:12.5px;color:var(--text-secondary);line-height:1.5;flex:1;}
+  .log-text strong{color:var(--text-primary);font-weight:500;}
+  .log-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);flex-shrink:0;margin-top:2px;}
+  .sparkbar-row{display:flex;align-items:flex-end;gap:3px;height:36px;margin-top:8px;}
+  .sparkbar{flex:1;border-radius:2px 2px 0 0;background:rgba(212,168,83,0.25);min-height:2px;cursor:pointer;transition:background 0.15s;}
+  .sparkbar:hover{background:rgba(212,168,83,0.55);}
+  .sparkbar.today{background:var(--gold);}
+  .sparkbar-labels{display:flex;gap:3px;margin-top:3px;}
+  .sparkbar-label{flex:1;font-size:8px;color:var(--text-dim);text-align:center;}
+  .heatmap-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-top:4px;}
+  .heatmap-col{display:flex;flex-direction:column;gap:3px;}
+  .heatmap-cell{width:100%;aspect-ratio:1;border-radius:2px;background:var(--border);transition:transform 0.1s;cursor:pointer;}
+  .heatmap-cell:hover{transform:scale(1.3);z-index:10;}
+  .heatmap-cell[data-level="1"]{background:rgba(212,168,83,0.2);}
+  .heatmap-cell[data-level="2"]{background:rgba(212,168,83,0.45);}
+  .heatmap-cell[data-level="3"]{background:rgba(212,168,83,0.7);}
+  .heatmap-cell[data-level="4"]{background:rgba(212,168,83,0.95);}
+  .heatmap-cell[data-level="today"]{background:var(--gold);box-shadow:0 0 6px rgba(212,168,83,0.5);}
+  .heatmap-months{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-bottom:6px;}
+  .heatmap-month-label{font-size:8.5px;color:var(--text-dim);text-align:center;}
+  .book-card{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border-soft);}
+  .book-card:last-child{border-bottom:none;padding-bottom:0;}.book-card:first-child{padding-top:0;}
+  .book-spine{width:36px;height:52px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;writing-mode:vertical-rl;overflow:hidden;padding:4px;}
+  .book-spine.active{background:linear-gradient(160deg,#2a2318,#3a2e1a);border:1px solid var(--gold-dim);color:var(--gold);}
+  .book-info{flex:1;min-width:0;}
+  .book-title{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .book-meta{font-size:10.5px;color:var(--text-dim);margin-top:3px;}
+  .comp-bar{display:flex;align-items:center;gap:6px;margin-top:6px;}
+  .comp-label{font-size:9.5px;color:var(--text-dim);text-transform:uppercase;width:60px;flex-shrink:0;}
+  .comp-track{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+  .comp-fill{height:100%;background:var(--blue-soft);border-radius:2px;}
+  .comp-pct{font-family:'DM Mono',monospace;font-size:10px;color:var(--blue-soft);width:26px;text-align:right;}
+  .listen-item{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border-soft);}
+  .listen-item:last-child{border-bottom:none;padding-bottom:0;}.listen-item:first-child{padding-top:0;}
+  .listen-thumb{width:44px;height:44px;border-radius:6px;background:var(--bg-hover);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .listen-info{flex:1;min-width:0;}
+  .listen-title{font-size:13px;font-weight:500;}
+  .listen-meta{font-size:11px;color:var(--text-dim);margin-top:2px;}
+  .output-entry{background:var(--bg-hover);border:1px solid var(--border-soft);border-radius:8px;padding:10px 12px;margin-bottom:8px;}
+  .output-entry:last-child{margin-bottom:0;}
+  .output-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+  .output-type-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--warning);}
+  .output-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .output-content{font-size:12.5px;color:var(--text-secondary);line-height:1.5;}
+  .output-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;}
+  .tag{font-size:9.5px;padding:2px 7px;border-radius:10px;border:1px solid var(--border);color:var(--text-dim);font-weight:500;}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;width:420px;max-width:90vw;max-height:80vh;overflow-y:auto;animation:modalIn 0.2s ease;}
+  @keyframes modalIn{from{opacity:0;transform:translateY(12px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border-soft);display:flex;justify-content:space-between;align-items:center;}
+  .modal-title{font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;}
+  .modal-close{color:var(--text-dim);cursor:pointer;font-size:18px;line-height:1;transition:color 0.15s;}
+  .modal-close:hover{color:var(--text-primary);}
+  .modal-body{padding:20px 24px 24px;}
+  .form-group{margin-bottom:16px;}
+  .form-label{display:block;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:7px;}
+  .form-input,.form-select,.form-textarea{width:100%;background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:13.5px;outline:none;transition:border-color 0.15s;}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold-dim);}
+  .form-textarea{resize:vertical;min-height:80px;}
+  .form-select option{background:var(--bg-card);}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .range-wrap{display:flex;align-items:center;gap:10px;}
+  .range-wrap input[type=range]{flex:1;accent-color:var(--gold);cursor:pointer;}
+  .range-val{font-family:'DM Mono',monospace;font-size:13px;color:var(--gold);min-width:32px;text-align:right;}
+  .type-tabs{display:flex;gap:6px;margin-bottom:16px;}
+  .type-tab{flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;color:var(--text-secondary);background:transparent;font-family:'Outfit',sans-serif;transition:all 0.15s;}
+  .type-tab.selected{background:var(--gold-glow);border-color:var(--gold-dim);color:var(--gold);}
+  .btn-submit{width:100%;background:var(--gold);color:#0f0e0d;border:none;padding:11px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;transition:background 0.15s;}
+  .btn-submit:hover{background:#e0b860;}
+  .btn-submit:disabled{opacity:0.6;cursor:not-allowed;}
+  .form-section{display:none;}.form-section.visible{display:block;}
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .fade-in{opacity:0;transform:translateY(8px);animation:fadeUp 0.35s ease forwards;}
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+  .fade-in:nth-child(1){animation-delay:0.05s}.fade-in:nth-child(2){animation-delay:0.10s}.fade-in:nth-child(3){animation-delay:0.15s}.fade-in:nth-child(4){animation-delay:0.20s}.fade-in:nth-child(5){animation-delay:0.25s}.fade-in:nth-child(6){animation-delay:0.30s}
+  .toast{position:fixed;bottom:28px;right:28px;background:var(--bg-card);border:1px solid var(--sage);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--sage);z-index:600;display:none;max-width:260px;}
+  .toast.error{border-color:var(--red-jp);color:#e07070;}
+  .empty-state{text-align:center;padding:24px 16px;color:var(--text-dim);font-size:12.5px;line-height:1.6;}
+  .empty-icon{font-size:26px;margin-bottom:8px;}
+</style>
+</head>
+<body>
 
+<div class="loading-screen" id="loading-screen">
+  <div class="loading-logo">指令部</div>
+  <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+  <div class="loading-text">Loading your data…</div>
+</div>
+
+<div class="app-shell" id="app-shell" style="display:none">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-jp">指令部</div>
+      <div class="logo-en">Command Station</div>
+    </div>
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" onclick="switchView('dashboard')"><span class="nav-icon">⌂</span> Dashboard</div>
+    <div class="nav-section-label">Modules</div>
+    <div class="nav-item" onclick="switchView('anki')"><span class="nav-icon">🃏</span> Flashcards</div>
+    <div class="nav-item" onclick="switchView('reading')"><span class="nav-icon">📖</span> Reading</div>
+    <div class="nav-item" onclick="switchView('listening')"><span class="nav-icon">🎧</span> Listening</div>
+    <div class="nav-item" onclick="switchView('output')"><span class="nav-icon">💬</span> Output</div>
+    <div class="nav-section-label">Progress</div>
+    <div class="nav-item" onclick="switchView('history')"><span class="nav-icon">📊</span> History</div>
+    <div class="streak-badge">
+      <div class="streak-number" id="sidebar-streak">—</div>
+      <div class="streak-label">Day Streak 🔥</div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 id="view-title">Good morning, Zach</h1>
+      <div class="date-line" id="date-line"></div>
+    </div>
+    <div class="topbar-right">
+      <span class="cloud-status" id="cloud-status">⏳ Connecting…</span>
+      <span class="level-pill">N4 · ~3 yrs</span>
+      <button class="btn-log" onclick="openModal()">＋ Log Session</button>
+    </div>
+  </header>
+
+  <main class="main" id="main-content"></main>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Log a Session</div>
+      <span class="modal-close" onclick="closeModal()">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="type-tabs">
+        <button class="type-tab selected" onclick="selectType('anki',this)">🃏 Anki</button>
+        <button class="type-tab" onclick="selectType('reading',this)">📖 Reading</button>
+        <button class="type-tab" onclick="selectType('listening',this)">🎧 Listening</button>
+        <button class="type-tab" onclick="selectType('output',this)">💬 Output</button>
+      </div>
+      <div class="form-section visible" id="form-anki">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Reviews Done</label><input class="form-input" type="number" id="anki-reviews" placeholder="e.g. 80" min="0"></div>
+          <div class="form-group"><label class="form-label">New Cards</label><input class="form-input" type="number" id="anki-new" placeholder="e.g. 10" min="0"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Deck / Focus</label><input class="form-input" type="text" id="anki-deck" placeholder="e.g. Core 2k, Grammar"></div>
+        <div class="form-group"><label class="form-label">Minutes Spent</label><div class="range-wrap"><input type="range" min="5" max="120" value="30" id="anki-mins" oninput="document.getElementById('anki-mins-val').textContent=this.value"><span class="range-val" id="anki-mins-val">30</span></div></div>
+        <div class="form-group"><label class="form-label">Notes (optional)</label><textarea class="form-textarea" id="anki-notes" placeholder="Anything you noticed, struggled with, or nailed…"></textarea></div>
+      </div>
+      <div class="form-section" id="form-reading">
+        <div class="form-group"><label class="form-label">Book / Material</label><input class="form-input" type="text" id="read-book" placeholder="e.g. Koguma no Kuuku"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Pages Read</label><input class="form-input" type="number" id="read-pages" placeholder="e.g. 12" min="0"></div>
+          <div class="form-group"><label class="form-label">Minutes</label><div class="range-wrap" style="margin-top:2px"><input type="range" min="5" max="120" value="25" id="read-mins" oninput="document.getElementById('read-mins-val').textContent=this.value"><span class="range-val" id="read-mins-val">25</span></div></div>
+        </div>
+        <div class="form-group"><label class="form-label">Comprehension Feel</label><div class="range-wrap"><input type="range" min="0" max="100" value="65" id="read-comp" oninput="document.getElementById('read-comp-val').textContent=this.value+'%'"><span class="range-val" id="read-comp-val">65%</span></div></div>
+        <div class="form-group"><label class="form-label">Words Looked Up</label><input class="form-input" type="number" id="read-lookups" placeholder="e.g. 5" min="0"></div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="read-notes" placeholder="New words, grammar, impressions…"></textarea></div>
+      </div>
+      <div class="form-section" id="form-listening">
+        <div class="form-group"><label class="form-label">Show / Material</label><input class="form-input" type="text" id="listen-show" placeholder="e.g. Shigatsu wa Kimi no Uso"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Episodes</label><input class="form-input" type="number" id="listen-eps" placeholder="e.g. 2" min="0"></div>
+          <div class="form-group"><label class="form-label">Minutes</label><div class="range-wrap" style="margin-top:2px"><input type="range" min="5" max="180" value="45" id="listen-mins" oninput="document.getElementById('listen-mins-val').textContent=this.value"><span class="range-val" id="listen-mins-val">45</span></div></div>
+        </div>
+        <div class="form-group"><label class="form-label">Comprehension %</label><div class="range-wrap"><input type="range" min="0" max="100" value="50" id="listen-comp" oninput="document.getElementById('listen-comp-val').textContent=this.value+'%'"><span class="range-val" id="listen-comp-val">50%</span></div></div>
+        <div class="form-group"><label class="form-label">Subs Used</label><select class="form-select" id="listen-subs"><option value="none">No subs</option><option value="jp" selected>Japanese subs</option><option value="en">English subs</option></select></div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="listen-notes" placeholder="What you caught, what flew by…"></textarea></div>
+      </div>
+      <div class="form-section" id="form-output">
+        <div class="form-group"><label class="form-label">Output Type</label><select class="form-select" id="output-type-select"><option value="texting">Daily texting</option><option value="writing">Free writing</option><option value="speaking">Speaking practice</option><option value="other">Other</option></select></div>
+        <div class="form-group"><label class="form-label">Minutes</label><div class="range-wrap"><input type="range" min="5" max="90" value="20" id="output-mins" oninput="document.getElementById('output-mins-val').textContent=this.value"><span class="range-val" id="output-mins-val">20</span></div></div>
+        <div class="form-group"><label class="form-label">Grammar / Vocab Topics</label><input class="form-input" type="text" id="output-topics" placeholder="e.g. から vs ので, て-form…"></div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="output-notes" placeholder="Sentences you sent, corrections, things you noticed…"></textarea></div>
+      </div>
+      <button class="btn-submit" id="submit-btn" onclick="submitLog()">Save Session ✓</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Firebase init ──────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:"AIzaSyCc2fd0pYKiWAVKCCc5GqRCDEWqpE0vsxg",
+  authDomain:"jp-command-station.firebaseapp.com",
+  projectId:"jp-command-station",
+  storageBucket:"jp-command-station.firebasestorage.app",
+  messagingSenderId:"68397498945",
+  appId:"1:68397498945:web:53ee30ff2cc2f156ccfcc0"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ── State ──────────────────────────────────────────────────
+const state = { streak:0, todayMinutes:0, totalSessions:0, weekMinutes:[0,0,0,0,0,0,0], sessions:[], allSessions:[] };
+let currentView='dashboard', activeType='anki';
+
+// ── Helpers ────────────────────────────────────────────────
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function tsToDate(ts){ return ts&&ts.toDate?ts.toDate():(ts instanceof Date?ts:new Date()); }
+function formatTime(ts){ const d=tsToDate(ts),h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0'); return `${h%12||12}:${m}${h<12?'am':'pm'}`; }
+function formatDate(ts){ const d=tsToDate(ts),today=new Date(),yesterday=new Date(); today.setHours(0,0,0,0); yesterday.setHours(0,0,0,0); yesterday.setDate(yesterday.getDate()-1); if(d>=today)return'Today'; if(d>=yesterday)return'Yesterday'; return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+function sessionText(s){
+  if(s.type==='anki')     return`<strong>Anki</strong> · ${s.reviews||0} reviews, ${s.newCards||0} new — ${s.deck||'Deck'}`;
+  if(s.type==='reading')  return`<strong>Reading</strong> · ${s.book||'Book'}, ${s.pages||0} pages — ${s.comp||0}% comp`;
+  if(s.type==='listening')return`<strong>Listening</strong> · ${s.show||'Show'} +${s.eps||1} eps — ${s.comp||0}% comp`;
+  if(s.type==='output')   return`<strong>Output</strong> · ${s.outputType||'texting'} — ${s.topics||'general practice'}`;
+  return'<strong>Session</strong>';
+}
+function showToast(msg,isError=false){ const t=document.getElementById('toast'); t.textContent=msg; t.className='toast'+(isError?' error':''); t.style.display='block'; setTimeout(()=>t.style.display='none',2800); }
+
+// ── Load ───────────────────────────────────────────────────
+async function loadData(){
+  try {
+    const metaSnap = await db.doc('meta/stats').get();
+    if(metaSnap.exists){ const m=metaSnap.data(); state.streak=m.streak||0; }
+    const snap = await db.collection('sessions').orderBy('createdAt','desc').limit(300).get();
+    state.allSessions = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const todayStart=new Date(); todayStart.setHours(0,0,0,0);
+    state.sessions = state.allSessions.filter(s=>tsToDate(s.createdAt)>=todayStart);
+    state.todayMinutes = state.sessions.reduce((a,s)=>a+(s.minutes||0),0);
+    state.totalSessions = state.allSessions.length;
+    const week=[0,0,0,0,0,0,0], ws=new Date(); ws.setHours(0,0,0,0); ws.setDate(ws.getDate()-ws.getDay());
+    state.allSessions.forEach(s=>{ const d=tsToDate(s.createdAt); if(d>=ws)week[d.getDay()]+=(s.minutes||0); });
+    state.weekMinutes=week;
+    document.getElementById('cloud-status').textContent='☁️ Synced';
+    document.getElementById('sidebar-streak').textContent=state.streak;
+  } catch(e){
+    console.error('Load error:',e);
+    document.getElementById('cloud-status').textContent='⚠️ Offline';
+    showToast('Could not reach cloud',true);
+  }
+}
+
+// ── Save ───────────────────────────────────────────────────
+async function saveSession(data){
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true; btn.textContent='Saving…';
+  try {
+    const payload={...data, createdAt:firebase.firestore.FieldValue.serverTimestamp(), date:todayStr()};
+    const ref = await db.collection('sessions').add(payload);
+    const metaSnap = await db.doc('meta/stats').get();
+    const meta = metaSnap.exists?metaSnap.data():{};
+    const lastDate=meta.lastStudyDate||'', today=todayStr();
+    const yest=new Date(); yest.setDate(yest.getDate()-1); const yStr=yest.toISOString().slice(0,10);
+    let newStreak=meta.streak||0;
+    if(lastDate===today){}
+    else if(lastDate===yStr) newStreak++;
+    else newStreak=1;
+    const dayIdx=new Date().getDay();
+    const wm=meta.weekMinutes||[0,0,0,0,0,0,0];
+    wm[dayIdx]=(wm[dayIdx]||0)+(data.minutes||0);
+    await db.doc('meta/stats').set({ streak:newStreak, totalSessions:(meta.totalSessions||0)+1, lastStudyDate:today, weekMinutes:wm, lastUpdated:firebase.firestore.FieldValue.serverTimestamp() });
+    state.streak=newStreak; state.totalSessions++; state.todayMinutes+=(data.minutes||0); state.weekMinutes[dayIdx]=wm[dayIdx];
+    document.getElementById('sidebar-streak').textContent=state.streak;
+    const full={id:ref.id,...data,createdAt:new Date()};
+    state.sessions.unshift(full); state.allSessions.unshift(full);
+    btn.disabled=false; btn.textContent='Save Session ✓';
+    closeModal(); showToast('Session saved to cloud ✓'); renderView(currentView);
+  } catch(e){
+    console.error('Save error:',e);
+    btn.disabled=false; btn.textContent='Save Session ✓';
+    showToast('Save failed — check connection',true);
+  }
+}
+
+// ── Heatmap ────────────────────────────────────────────────
+function buildHeatmap(){
+  const startDay=new Date(); startDay.setDate(startDay.getDate()-(13*7-1)); startDay.setHours(0,0,0,0);
+  const dateMap={}, todayKey=todayStr();
+  state.allSessions.forEach(s=>{ const d=tsToDate(s.createdAt); const k=d.toISOString().slice(0,10); dateMap[k]=(dateMap[k]||0)+(s.minutes||0); });
+  const cells=[];
+  for(let w=0;w<13;w++){ const week=[];
+    for(let d=0;d<7;d++){ const day=new Date(startDay); day.setDate(startDay.getDate()+w*7+d); const k=day.toISOString().slice(0,10);
+      if(k>todayKey){week.push(-1);continue;}
+      const mins=dateMap[k]||0;
+      week.push(k===todayKey?'today':mins===0?0:mins<30?1:mins<60?2:mins<90?3:4);
+    } cells.push(week); }
+  return cells;
+}
+function heatmapHTML(){
+  const hm=buildHeatmap(), months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const startDay=new Date(); startDay.setDate(startDay.getDate()-(13*7-1));
+  const labels=hm.map((_,wi)=>{ const d=new Date(startDay); d.setDate(startDay.getDate()+wi*7); return`<div class="heatmap-month-label">${wi===0||d.getDate()<=7?months[d.getMonth()]:''}</div>`; }).join('');
+  const cols=hm.map(week=>`<div class="heatmap-col">${week.map(l=>l===-1?`<div class="heatmap-cell" style="opacity:0.1"></div>`:`<div class="heatmap-cell" data-level="${l}"></div>`).join('')}</div>`).join('');
+  return`<div class="heatmap-months">${labels}</div><div class="heatmap-grid">${cols}</div>`;
+}
+
+// ── Nav ────────────────────────────────────────────────────
+function switchView(view){
+  currentView=view;
+  const titles={dashboard:'Good morning, Zach',anki:'Flashcards',reading:'Reading Tracker',listening:'Listening Log',output:'Output Log',history:'Study History'};
+  document.getElementById('view-title').textContent=titles[view];
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  ['dashboard','anki','reading','listening','output','history'].forEach((v,i)=>{ if(v===view)document.querySelectorAll('.nav-item')[i].classList.add('active'); });
+  renderView(view);
+}
+function renderView(view){
+  const main=document.getElementById('main-content'); main.innerHTML='';
+  if(view==='dashboard')renderDashboard(main);
+  else if(view==='anki')renderAnki(main);
+  else if(view==='reading')renderReading(main);
+  else if(view==='listening')renderListening(main);
+  else if(view==='output')renderOutput(main);
+  else if(view==='history')renderHistory(main);
+}
+
+// ── Dashboard ──────────────────────────────────────────────
+function renderDashboard(main){
+  const days=['S','M','T','W','T','F','S'], maxM=Math.max(...state.weekMinutes,1), todayIdx=new Date().getDay();
+  const bars=state.weekMinutes.map((m,i)=>`<div class="sparkbar${i===todayIdx?' today':''}" style="height:${Math.max(Math.round((m/maxM)*36),2)}px" title="${m}min"></div>`).join('');
+  const weekTotal=state.weekMinutes.reduce((a,b)=>a+b,0);
+  const feedHtml=state.sessions.length===0
+    ?`<div class="empty-state"><div class="empty-icon">📭</div>No sessions today yet.<br>Hit <strong>+ Log Session</strong> to start.</div>`
+    :state.sessions.slice(0,8).map(s=>`<div class="log-entry"><div class="log-dot dot-${s.type}"></div><div class="log-text">${sessionText(s)}</div><div class="log-time">${formatTime(s.createdAt)}</div></div>`).join('');
+  main.innerHTML=`
+    <div class="stats-row">
+      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Today's Study Time</div><div class="stat-value">${state.todayMinutes}<span style="font-size:14px;color:var(--text-dim)"> min</span></div><div class="stat-sub">~${(state.todayMinutes/60).toFixed(1)} hours</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Current Streak</div><div class="stat-value">${state.streak}<span style="font-size:14px;color:var(--text-dim)"> days</span></div><span class="stat-delta delta-up">🔥 Keep going</span></div>
+      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Total Sessions</div><div class="stat-value">${state.totalSessions}</div><div class="stat-sub">All types, all time</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">This Week</div><div class="stat-value">${weekTotal}<span style="font-size:14px;color:var(--text-dim)"> min</span></div><div class="stat-sub">Goal: 420 min</div><div style="margin-top:6px;height:3px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:${Math.min(100,Math.round(weekTotal/420*100))}%;background:var(--warning);border-radius:2px"></div></div></div>
+    </div>
+    <div class="section-grid">
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📅</span> This Week</div></div><div class="panel-body"><div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Daily minutes · target 60/day</div><div class="sparkbar-row">${bars}</div><div class="sparkbar-labels">${days.map(d=>`<span class="sparkbar-label">${d}</span>`).join('')}</div></div></div>
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🕐</span> Today's Activity</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${feedHtml}</div></div>
+    </div>
+    <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🗓</span> Activity — Last 3 Months</div><div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-dim)">Less <div style="width:10px;height:10px;border-radius:2px;background:var(--border)"></div><div style="width:10px;height:10px;border-radius:2px;background:rgba(212,168,83,0.3)"></div><div style="width:10px;height:10px;border-radius:2px;background:rgba(212,168,83,0.6)"></div><div style="width:10px;height:10px;border-radius:2px;background:var(--gold)"></div> More</div></div><div class="panel-body">${heatmapHTML()}</div></div>`;
+}
+
+// ── Anki ───────────────────────────────────────────────────
+function renderAnki(main){
+  const anki=state.allSessions.filter(s=>s.type==='anki'), todayAnki=state.sessions.filter(s=>s.type==='anki');
+  const totalReviews=anki.reduce((a,s)=>a+(s.reviews||0),0), todayReviews=todayAnki.reduce((a,s)=>a+(s.reviews||0),0);
+  const week=[0,0,0,0,0,0,0], ws=new Date(); ws.setHours(0,0,0,0); ws.setDate(ws.getDate()-ws.getDay());
+  anki.forEach(s=>{ const d=tsToDate(s.createdAt); if(d>=ws)week[d.getDay()]+=(s.reviews||0); });
+  const maxR=Math.max(...week,1), todayIdx=new Date().getDay();
+  const bars=week.map((r,i)=>`<div class="sparkbar${i===todayIdx?' today':''}" style="height:${Math.max(Math.round((r/maxR)*36),2)}px" title="${r}"></div>`).join('');
+  const feedHtml=anki.length===0?`<div class="empty-state"><div class="empty-icon">🃏</div>No Anki sessions yet.</div>`:anki.slice(0,6).map(s=>`<div class="log-entry"><div class="log-dot dot-anki"></div><div class="log-text"><strong>${s.deck||'Deck'}</strong> · ${s.reviews||0} reviews, ${s.newCards||0} new${s.notes?`<br><span style="font-size:11px">${s.notes}</span>`:''}</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('');
+  main.innerHTML=`
+    <div class="stats-row">
+      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Reviews Today</div><div class="stat-value">${todayReviews}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">All-time Reviews</div><div class="stat-value">${totalReviews}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Sessions Logged</div><div class="stat-value">${anki.length}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">This Week</div><div class="stat-value">${week.reduce((a,b)=>a+b,0)}<span style="font-size:14px;color:var(--text-dim)"> rev</span></div></div>
+    </div>
+    <div class="section-grid">
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📈</span> Weekly Reviews</div></div><div class="panel-body"><div class="sparkbar-row">${bars}</div><div class="sparkbar-labels">${['S','M','T','W','T','F','S'].map(d=>`<span class="sparkbar-label">${d}</span>`).join('')}</div></div></div>
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🃏</span> Recent Sessions</div><span class="panel-action" onclick="openModal()">+ Log</span></div><div class="panel-body">${feedHtml}</div></div>
+    </div>`;
+}
+
+// ── Reading ────────────────────────────────────────────────
+function renderReading(main){
+  const read=state.allSessions.filter(s=>s.type==='reading');
+  const totalPages=read.reduce((a,s)=>a+(s.pages||0),0), avgComp=read.length?Math.round(read.reduce((a,s)=>a+(s.comp||0),0)/read.length):0;
+  const bookMap={};
+  read.forEach(s=>{ const k=s.book||'Unknown'; if(!bookMap[k])bookMap[k]={pages:0,sessions:0,comp:[]}; bookMap[k].pages+=(s.pages||0); bookMap[k].sessions++; bookMap[k].comp.push(s.comp||0); });
+  const books=Object.entries(bookMap).map(([t,d])=>({title:t,pages:d.pages,sessions:d.sessions,avgComp:Math.round(d.comp.reduce((a,b)=>a+b,0)/d.comp.length)}));
+  const booksHtml=books.length===0?`<div class="empty-state"><div class="empty-icon">📖</div>No reading sessions yet.</div>`:books.map(b=>`<div class="book-card"><div class="book-spine active">${b.title.slice(0,8)}</div><div class="book-info"><div class="book-title">${b.title}</div><div class="book-meta">${b.pages} pages · ${b.sessions} sessions</div><div class="comp-bar" style="margin-top:6px"><span class="comp-label">Avg comp</span><div class="comp-track"><div class="comp-fill" style="width:${b.avgComp}%;background:var(--sage)"></div></div><span class="comp-pct" style="color:var(--sage)">${b.avgComp}%</span></div></div></div>`).join('');
+  const feedHtml=read.slice(0,6).map(s=>`<div class="log-entry"><div class="log-dot dot-reading"></div><div class="log-text"><strong>${s.book||'Book'}</strong> · ${s.pages||0} pages · ${s.comp||0}% comp${s.notes?`<br><span style="font-size:11px">${s.notes}</span>`:''}</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('');
+  main.innerHTML=`
+    <div class="stats-row">
+      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Books Tracked</div><div class="stat-value">${books.length}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Pages</div><div class="stat-value">${totalPages}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Avg Comprehension</div><div class="stat-value">${avgComp}<span style="font-size:14px;color:var(--text-dim)">%</span></div></div>
+      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Sessions</div><div class="stat-value">${read.length}</div></div>
+    </div>
+    <div class="section-grid">
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📚</span> Books</div><span class="panel-action" onclick="openModal()">+ Log pages</span></div><div class="panel-body">${booksHtml}</div></div>
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📝</span> Recent Sessions</div></div><div class="panel-body">${feedHtml||`<div class="empty-state"><div class="empty-icon">📖</div>No sessions yet.</div>`}</div></div>
+    </div>`;
+}
+
+// ── Listening ──────────────────────────────────────────────
+function renderListening(main){
+  const lis=state.allSessions.filter(s=>s.type==='listening');
+  const totalEps=lis.reduce((a,s)=>a+(parseInt(s.eps)||0),0), avgComp=lis.length?Math.round(lis.reduce((a,s)=>a+(s.comp||0),0)/lis.length):0, totalMins=lis.reduce((a,s)=>a+(s.minutes||0),0);
+  const showMap={};
+  lis.forEach(s=>{ const k=s.show||'Unknown'; if(!showMap[k])showMap[k]={eps:0,comp:[]}; showMap[k].eps+=(parseInt(s.eps)||0); showMap[k].comp.push(s.comp||0); });
+  const shows=Object.entries(showMap).map(([t,d])=>({title:t,eps:d.eps,avgComp:Math.round(d.comp.reduce((a,b)=>a+b,0)/d.comp.length)}));
+  const showsHtml=shows.length===0?`<div class="empty-state"><div class="empty-icon">🎧</div>No listening sessions yet.</div>`:shows.map(s=>`<div class="listen-item"><div class="listen-thumb">🎬</div><div class="listen-info"><div class="listen-title">${s.title}</div><div class="listen-meta">${s.eps} episodes watched</div><div class="comp-bar"><span class="comp-label">Avg comp</span><div class="comp-track"><div class="comp-fill" style="width:${s.avgComp}%"></div></div><span class="comp-pct">${s.avgComp}%</span></div></div></div>`).join('');
+  const feedHtml=lis.slice(0,5).map(s=>`<div class="log-entry"><div class="log-dot dot-listening"></div><div class="log-text"><strong>${s.show||'Show'}</strong> · +${s.eps||1} eps · ${s.subs||'JP subs'} · ${s.comp||0}% comp</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('');
+  main.innerHTML=`
+    <div class="stats-row">
+      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Shows Tracked</div><div class="stat-value">${shows.length}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Episodes</div><div class="stat-value">${totalEps}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Avg Comprehension</div><div class="stat-value">${avgComp}<span style="font-size:14px;color:var(--text-dim)">%</span></div>${avgComp<60&&lis.length>0?`<div class="stat-sub" style="color:var(--blue-soft);margin-top:4px">⚠️ Known weak spot</div>`:''}</div>
+      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Total Hours</div><div class="stat-value">${(totalMins/60).toFixed(1)}</div></div>
+    </div>
+    <div class="section-grid">
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🎬</span> Shows</div><span class="panel-action" onclick="openModal()">+ Log episode</span></div><div class="panel-body">${showsHtml}</div></div>
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📝</span> Recent Sessions</div></div><div class="panel-body">${feedHtml||`<div class="empty-state"><div class="empty-icon">🎧</div>No sessions yet.</div>`}</div></div>
+    </div>`;
+}
+
+// ── Output ─────────────────────────────────────────────────
+function renderOutput(main){
+  const out=state.allSessions.filter(s=>s.type==='output');
+  const totalMins=out.reduce((a,s)=>a+(s.minutes||0),0), todayOut=state.sessions.filter(s=>s.type==='output').length;
+  const entriesHtml=out.length===0?`<div class="empty-state"><div class="empty-icon">💬</div>No output sessions yet.<br>Log today's text exchange!</div>`:out.slice(0,10).map(s=>`<div class="output-entry"><div class="output-header"><div class="output-type-label">${s.outputType||'texting'}</div><div class="output-date">${formatDate(s.createdAt)}</div></div><div class="output-content">${s.notes||'Session logged.'}</div>${s.topics?`<div class="output-tags">${s.topics.split(',').map(t=>`<span class="tag">${t.trim()}</span>`).join('')}</div>`:''}</div>`).join('');
+  main.innerHTML=`
+    <div class="stats-row">
+      <div class="stat-card fade-in" style="--accent:var(--warning)"><div class="stat-label">Sessions Total</div><div class="stat-value">${out.length}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--gold)"><div class="stat-label">Total Minutes</div><div class="stat-value">${totalMins}</div></div>
+      <div class="stat-card fade-in" style="--accent:var(--sage)"><div class="stat-label">Today</div><div class="stat-value">${todayOut}<span style="font-size:14px;color:var(--text-dim)"> sessions</span></div></div>
+      <div class="stat-card fade-in" style="--accent:var(--blue-soft)"><div class="stat-label">Avg Min / Session</div><div class="stat-value">${out.length?Math.round(totalMins/out.length):0}</div></div>
+    </div>
+    <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>💬</span> Output Journal</div><span class="panel-action" onclick="openModal()">+ Log session</span></div><div class="panel-body">${entriesHtml}</div></div>`;
+}
+
+// ── History ────────────────────────────────────────────────
+function renderHistory(main){
+  const all=state.allSessions, byMins={anki:0,reading:0,listening:0,output:0};
+  all.forEach(s=>{ if(byMins[s.type]!==undefined)byMins[s.type]+=(s.minutes||0); });
+  const totalMins=Object.values(byMins).reduce((a,b)=>a+b,0);
+  const items=[{label:'Anki / Flashcards',color:'var(--gold)',mins:byMins.anki},{label:'Reading',color:'var(--sage)',mins:byMins.reading},{label:'Listening',color:'var(--blue-soft)',mins:byMins.listening},{label:'Output',color:'var(--warning)',mins:byMins.output}];
+  const breakdownHtml=items.map(item=>{ const pct=totalMins>0?Math.round(item.mins/totalMins*100):0; return`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12.5px">${item.label}</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:${item.color}">${pct}% · ${item.mins}m</span></div><div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${item.color};border-radius:3px"></div></div></div>`; }).join('');
+  const recentHtml=all.slice(0,12).map(s=>`<div class="log-entry"><div class="log-dot dot-${s.type}"></div><div class="log-text">${sessionText(s)}</div><div class="log-time">${formatDate(s.createdAt)}</div></div>`).join('')||`<div class="empty-state"><div class="empty-icon">📊</div>No sessions yet.</div>`;
+  main.innerHTML=`
+    <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🗓</span> Activity Heatmap — Last 3 Months</div></div><div class="panel-body">${heatmapHTML()}</div></div>
+    <div class="section-grid">
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>📊</span> All-time Breakdown</div></div><div class="panel-body">${breakdownHtml}<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-soft);font-size:11px;color:var(--text-dim)">${all.length} total sessions · ${totalMins} total minutes</div></div></div>
+      <div class="panel fade-in"><div class="panel-header"><div class="panel-title"><span>🕐</span> Recent Sessions</div></div><div class="panel-body">${recentHtml}</div></div>
+    </div>`;
+}
+
+// ── Modal ──────────────────────────────────────────────────
+function openModal(){ document.getElementById('modal-overlay').classList.add('open'); }
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
+function handleOverlayClick(e){ if(e.target===document.getElementById('modal-overlay'))closeModal(); }
+function selectType(type,el){ activeType=type; document.querySelectorAll('.type-tab').forEach(t=>t.classList.remove('selected')); el.classList.add('selected'); document.querySelectorAll('.form-section').forEach(s=>s.classList.remove('visible')); document.getElementById('form-'+type).classList.add('visible'); }
+
+async function submitLog(){
+  let data={type:activeType};
+  if(activeType==='anki') data={...data,reviews:parseInt(document.getElementById('anki-reviews').value)||0,newCards:parseInt(document.getElementById('anki-new').value)||0,deck:document.getElementById('anki-deck').value||'Deck',minutes:parseInt(document.getElementById('anki-mins').value)||30,notes:document.getElementById('anki-notes').value};
+  else if(activeType==='reading') data={...data,book:document.getElementById('read-book').value||'Book',pages:parseInt(document.getElementById('read-pages').value)||0,minutes:parseInt(document.getElementById('read-mins').value)||25,comp:parseInt(document.getElementById('read-comp').value)||65,lookups:parseInt(document.getElementById('read-lookups').value)||0,notes:document.getElementById('read-notes').value};
+  else if(activeType==='listening') data={...data,show:document.getElementById('listen-show').value||'Show',eps:parseInt(document.getElementById('listen-eps').value)||1,minutes:parseInt(document.getElementById('listen-mins').value)||45,comp:parseInt(document.getElementById('listen-comp').value)||50,subs:document.getElementById('listen-subs').value,notes:document.getElementById('listen-notes').value};
+  else if(activeType==='output') data={...data,outputType:document.getElementById('output-type-select').value,minutes:parseInt(document.getElementById('output-mins').value)||20,topics:document.getElementById('output-topics').value,notes:document.getElementById('output-notes').value};
+  await saveSession(data);
+}
+
+// ── Boot ───────────────────────────────────────────────────
+async function boot(){
+  const now=new Date(), days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'], months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('date-line').textContent=`${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()} ${now.getFullYear()}`;
+  await loadData();
+  document.getElementById('loading-screen').style.display='none';
+  document.getElementById('app-shell').style.display='grid';
+  renderView('dashboard');
+}
+boot();
+</script>
+</body>
+</html>
